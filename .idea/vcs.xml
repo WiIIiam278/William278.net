@@ -6,5 +6,8 @@
     <mapping directory="$PROJECT_DIR$/frontend/docs/huskhomes" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/frontend/docs/huskhomes2" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/frontend/docs/husktowns" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/frontend/projects/huskchat" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/frontend/projects/huskhomes" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/frontend/projects/husktowns" vcs="Git" />
   </component>
 </project>

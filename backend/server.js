@@ -17,8 +17,9 @@ const MarkdownIt = require('markdown-it'), md = new MarkdownIt({
     breaks: true
 }).use(wikiLinks).use(prism, {defaultLanguage: 'yml'});
 const gitPullOrClone = require('git-clone-or-pull');
-const path = require('path');
-const {PROJECTS} = require("../frontend/projects");
+const appRoot = require('app-root-path');
+
+const {PROJECTS} = require(`${appRoot}/frontend/projects`);
 
 const DOCS_PAGE_TEMPLATE = fs.readFileSync('frontend/docs/docs.html').toString();
 const CHECK_DOCUMENT_ENDS = ['', '.html', '.md']
@@ -28,7 +29,7 @@ const PORT = 8808;
 
 function fetchPlugin(repository, name) {
     let wikiRepository = repository + '.wiki.git';
-    const filePath = 'frontend/docs/' + name.toLowerCase();
+    const filePath = `${appRoot}/frontend/docs/${name.toLowerCase()}`;
     gitPullOrClone(wikiRepository, filePath, function (err) {
         if (err) {
             console.error('Error pulling ' + wikiRepository + ' to ' + filePath)
