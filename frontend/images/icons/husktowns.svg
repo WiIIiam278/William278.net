@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <defs>
+    <clipPath id="clip-HuskTowns">
+      <rect width="1000" height="1000"/>
+    </clipPath>
+  </defs>
+  <g id="HuskTowns" clip-path="url(#clip-HuskTowns)">
+    <rect width="1000" height="1000" fill="#142b42"/>
+    <g id="Group_2" data-name="Group 2" transform="translate(0 1)">
+      <path id="Path_1" data-name="Path 1" d="M553.74,341v53.567H801.523V503.376H553.74v87.263L667.517,894.663,547.073,919.873,504.866,801.932,472.954,919.873,349.709,930.829l83.372-340.191V341H366.287V80.529H623.766V341Z" transform="translate(-268.499 17.971)" fill="#fff"/>
+      <path id="Path_3" data-name="Path 3" d="M1014.33,1018.482s-145.653-111.06-271.279-114.7c-154.756-5.462-280.382,98.316-529.813,114.7C45.737,1010.249-3.5,980.248-3.5,980.248V1083.3H1014.33Z" transform="translate(-10.499 -83.295)" fill="#fff"/>
+      <path id="Path_4" data-name="Path 4" d="M3013.017,1002V376.923H2811.834L3142.488,46.269V1002Z" transform="translate(-2140 -2)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

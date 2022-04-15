@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic site settings -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+    <!-- Site title and description -->
+    <title>William278 - Docs</title>
+    <meta name="description" content="Documentation for William278's projects."/>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../style.css">
+
+    <!-- Docs page script -->
+    <script src="projects.js"></script>
+    <script src="./docs/docs.js"></script>
+
+    <!-- Google fonts (for Nunito font) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito">
+
+    <!-- Loads the header and footer -->
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+        $(function () {
+            $("header").load("../navbar.html");
+            $("footer").load("../footer.html");
+        });
+    </script>
+
+    <!-- FontAwesome -->
+    <script src="https://kit.fontawesome.com/aa4c023dda.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<header></header>
+<main>
+    <div id="docs-page-two-column">
+        <div id="docs-page-left-column">
+            <h2>Projects</h2>
+            <div id="docs-page-sidebar-content">
+                <ul class="docs-page-product-list"></ul>
+            </div>
+        </div>
+        <div id="docs-page-right-column">
+            <div id="docs-page-content">
+                <h1>Docs</h1>
+                <p>You can find documentation for my various projects and products here. Please click through to each
+                    product wiki to find the information you need.</p>
+                <div>
+                    <ul class="docs-page-product-list two-column-list">
+
+                    </ul>
+                </div>
+                <h2>Contributing</h2>
+                <p>Docs are hosted via GitHub Wikis and are automatically pulled when changes are made. If you spot a
+                    mistake or would like to contribute to our wikis, please get in touch with us on Discord.</p>
+            </div>
+        </div>
+    </div>
+</main>
+<footer></footer>
+</body>
+</html>
