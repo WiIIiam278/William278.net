@@ -23,6 +23,9 @@ const {PROJECTS} = require("../frontend/projects");
 const DOCS_PAGE_TEMPLATE = fs.readFileSync('frontend/docs/docs.html').toString();
 const CHECK_DOCUMENT_ENDS = ['', '.html', '.md']
 
+const HOST = 'localhost';
+const PORT = 8808;
+
 function fetchPlugin(repository, name) {
     let wikiRepository = repository + '.wiki.git';
     const filePath = 'frontend/docs/' + name.toLowerCase();
@@ -43,10 +46,6 @@ for (let i = 0; i < PROJECTS.length; i++) {
         fetchPlugin(project.repository, project.name);
     }
 }
-
-
-const host = 'localhost';
-const port = 8000;
 
 const requestListener = function (request, response) {
     try {
@@ -178,7 +177,7 @@ function sendPage(response, fs, targetPath) {
 
 // Start server
 const server = http.createServer(requestListener);
-server.listen(port, host, () => {
-    console.log(`Server is running on ${host}:${port}`);
+server.listen(PORT, HOST, () => {
+    console.log(`Server is running on ${HOST}:${PORT}`);
     console.log('[Pterodactyl] Ready');
 });
