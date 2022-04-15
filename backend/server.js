@@ -24,8 +24,8 @@ const {PROJECTS} = require(`${appRoot}/frontend/projects`);
 const DOCS_PAGE_TEMPLATE = fs.readFileSync('frontend/docs/docs.html').toString();
 const CHECK_DOCUMENT_ENDS = ['', '.html', '.md']
 
-const HOST = 'localhost';
-const PORT = 8808;
+const HOST = process.env.HOST || 'localhost';
+const PORT = process.env.PORT || 8000;
 
 function fetchPlugin(repository, name) {
     let wikiRepository = repository + '.wiki.git';
