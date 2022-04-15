@@ -30,6 +30,13 @@ main {
     max-width: 1400px;
 }
 
+/* Horizontal rule */
+hr {
+    border: 0;
+    border-top: 0.125em solid var(--main-light-gray);
+    margin: 1.5em 0;
+}
+
 /* Tables */
 table {
     width: 100%;
@@ -77,10 +84,19 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Buttons */
 .button-link {
     border: 3px var(--accent-color) solid;
     border-radius: 10px;
     padding: 0.2em;
+}
+
+.button-link {
+    text-decoration: none !important;
+}
+
+.main-page-product-button {
+    text-decoration: none !important;
 }
 
 /* Image sizes */
@@ -107,6 +123,10 @@ code {
     flex: 1;
     padding: 0.5em 1em;
     margin: 0.1em 0;
+}
+
+#navbar a {
+    text-decoration: none !important;
 }
 
 #navbar-links {

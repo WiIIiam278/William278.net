@@ -16,26 +16,31 @@ const MarkdownIt = require('markdown-it'), md = new MarkdownIt({
     xhtmlOut: true,
     breaks: true
 }).use(wikiLinks).use(prism, {defaultLanguage: 'yml'});
-const gitPullOrClone = require('git-pull-or-clone')
+const gitPullOrClone = require('git-clone-or-pull');
+const path = require('path');
 const {PROJECTS} = require("../frontend/projects");
 
 const DOCS_PAGE_TEMPLATE = fs.readFileSync('frontend/docs/docs.html').toString();
 const CHECK_DOCUMENT_ENDS = ['', '.html', '.md']
 
-function fetchPlugin(plugin) {
-    let wikiRepository = plugin.repository + '.wiki.git';
-    const path = 'frontend/docs/' + plugin.name.toLowerCase();
-    gitPullOrClone(wikiRepository, path, (err) => {
-        if (err) throw err
-        console.log('Updated ' + plugin.name);
-    })
+function fetchPlugin(repository, name) {
+    let wikiRepository = repository + '.wiki.git';
+    const filePath = 'frontend/docs/' + name.toLowerCase();
+    gitPullOrClone(wikiRepository, filePath, function (err) {
+        if (err) {
+            console.error('Error pulling ' + wikiRepository + ' to ' + filePath)
+            console.error(err);
+            return;
+        }
+        console.log('Updated ' + name);
+    });
 }
 
 // Fetch repositories
 for (let i = 0; i < PROJECTS.length; i++) {
     let project = PROJECTS[i];
     if (project.documentation === true) {
-        fetchPlugin(project);
+        fetchPlugin(project.repository, project.name);
     }
 }
 
@@ -52,13 +57,71 @@ const requestListener = function (request, response) {
             response.end();
             return;
         }
-        sendRequestedPage('frontend/' + request.url.substring(request.url.indexOf('/') + 1), response);
+        if (request.method === 'GET') {
+            sendRequestedPage('frontend/' + request.url.substring(request.url.indexOf('/') + 1), response);
+        } else if (request.method === 'POST') {
+            handleWebhook(request.url.substring(request.url.indexOf('/') + 1), request, response);
+        } else {
+            response.writeHead(405);
+            response.end('Unsupported method.')
+        }
     } catch (error) {
         response.writeHead(500);
         fs.createReadStream('frontend/500.html').pipe(response);
         console.log(error);
     }
-};
+}
+
+function handleWebhook(requestPath, request, response) {
+    try {
+        if (requestPath.startsWith('api/update-docs')) {
+            let data = '';
+            request.on('data', chunk => {
+                data += chunk;
+            })
+            request.on('end', () => {
+                try {
+                    const DATA = JSON.parse(data);
+
+                    let repository = DATA.repository.svn_url;
+                    let name = '';
+
+                    // Validate repository
+                    let isValid = false;
+                    for (let i = 0; i < PROJECTS.length; i++) {
+                        let project = PROJECTS[i];
+                        if (project.repository === repository && project.documentation === true) {
+                            name = project.name;
+                            isValid = true;
+                            break;
+                        }
+                    }
+                    if (isValid === false) {
+                        response.writeHead('400');
+                        response.end('Invalid repository');
+                        return;
+                    }
+
+                    // Update repository
+                    fetchPlugin(repository, name);
+
+                    response.writeHead('200');
+                    response.end('Updated documentation');
+                } catch (error) {
+                    response.writeHead('500');
+                    response.end('Error parsing data body');
+                }
+            })
+        } else {
+            response.writeHead('404');
+            response.end('Not found')
+        }
+    } catch (error) {
+        response.writeHead('500');
+        response.end('Unknown server error');
+        console.error(error);
+    }
+}
 
 function sendRequestedPage(targetResourcePath, response) {
     for (let i = 0; i < CHECK_DOCUMENT_ENDS.length; i++) {
@@ -113,7 +176,9 @@ function sendPage(response, fs, targetPath) {
     fs.createReadStream(targetPath).pipe(response)
 }
 
+// Start server
 const server = http.createServer(requestListener);
 server.listen(port, host, () => {
     console.log(`Server is running on ${host}:${port}`);
+    console.log('[Pterodactyl] Ready');
 });

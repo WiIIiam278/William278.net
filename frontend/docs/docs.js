@@ -1,8 +1,8 @@
 window.onload = () => {
     let pluginList = ''
-    PROJECTS.forEach((plugin) => {
-        if (plugin.documentation) {
-            pluginList += '<li><a href="docs/' + plugin.name.toLowerCase() + '/Home">' + plugin.name + '</a></li>'
+    PROJECTS.forEach((project) => {
+        if (project.documentation) {
+            pluginList += '<li><object data="images/icons/' + project.icon + '" type="image/svg+xml" width="17.5"></object>&nbsp;<a href="docs/' + project.name.toLowerCase() + '/Home">' + project.name + '</a></li>'
         }
     });
 
