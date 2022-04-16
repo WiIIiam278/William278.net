@@ -156,6 +156,7 @@ code {
 
 @media screen and (max-width: 500px) {
     #navbar {
+        -webkit-flex-flow: column wrap;
         flex-flow: column wrap;
     }
 
@@ -200,6 +201,7 @@ code {
 
 @media screen and (max-width: 600px) {
     #main-page-two-column {
+        -webkit-flex-flow: column-reverse wrap;
         flex-flow: column-reverse wrap;
     }
 
@@ -260,6 +262,7 @@ code {
     position: relative;
     display: flex;
     flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
     margin-bottom: 1em;
 }
 
@@ -327,6 +330,7 @@ code {
 
 @media screen and (max-width: 750px) {
     #docs-page-two-column {
+        -webkit-flex-flow: column-reverse wrap;
         flex-flow: column-reverse wrap;
     }
 
