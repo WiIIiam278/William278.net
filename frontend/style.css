@@ -72,6 +72,15 @@ blockquote {
     -moz-columns: 2;
 }
 
+@media screen and (max-width: 750px) {
+    .two-column-list {
+        columns: 1;
+        -webkit-columns: 1;
+        -moz-columns: 1;
+    }
+
+}
+
 /* Links */
 a {
     color: var(--accent-color);
@@ -146,10 +155,29 @@ code {
     flex: 6.5;
 }
 
+@media screen and (max-width: 500px) {
+    #navbar {
+        flex-flow: column wrap;
+    }
+
+    #navbar-links {
+        flex: 1;
+        justify-content: center;
+        padding: 0;
+    }
+
+    #navbar-logo {
+        flex: 1;
+        text-align: center;
+        padding: 0.5em 0 0;
+    }
+}
+
 /* Footer */
 #footer {
     text-align: center;
     color: var(--main-light-gray);
+    margin: 0 1em;
 }
 
 /* Main page columns */
@@ -162,13 +190,29 @@ code {
 #main-page-left-column {
     flex: 1;
     max-width: 45%;
-    margin: 0 1em
+    margin: 0 1em;
 }
 
 #main-page-right-column {
     flex: 1;
     max-width: 45%;
     margin: 0 1em;
+}
+
+@media screen and (max-width: 600px) {
+    #main-page-two-column {
+        flex-flow: column-reverse wrap;
+    }
+
+    #main-page-left-column {
+        flex: 2;
+        max-width: 100%;
+    }
+
+    #main-page-right-column {
+        flex: 2;
+        max-width: 100%;
+    }
 }
 
 /* Head icon */
@@ -189,6 +233,25 @@ code {
     display: grid;
     width: 100%;
     grid-template-columns: repeat(2, 1fr);
+}
+
+/* Modify items per row based on screen size */
+@media screen and (max-width: 950px) {
+    #main-page-product-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    @media screen and (max-width: 600px) {
+        #main-page-product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media screen and (max-width: 450px) {
+            #main-page-product-grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+    }
 }
 
 .main-page-product {
@@ -265,7 +328,7 @@ code {
 #one-column-page-text {
     flex: 1;
     max-width: 1000px;
-    min-width: 300px;
+    min-width: 200px;
     margin: 0 1em;
 }
 
