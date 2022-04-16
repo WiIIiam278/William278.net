@@ -78,7 +78,6 @@ blockquote {
         -webkit-columns: 1;
         -moz-columns: 1;
     }
-
 }
 
 /* Links */
@@ -309,19 +308,37 @@ code {
     max-width: 1400px;
 }
 
+/* Navigation bar */
 #docs-page-left-column {
     flex: 1;
     padding: 1em;
-    max-width: 300px;
-    min-width: 300px;
+    max-width: 250px;
+    min-width: 250px;
     background-color: var(--main-gray);
 }
 
 #docs-page-right-column {
     flex: 1;
     max-width: 1000px;
-    min-width: 1000px;
+    min-width: 200px;
     margin-left: 2em;
+    margin-right: 1em;
+}
+
+@media screen and (max-width: 750px) {
+    #docs-page-two-column {
+        flex-flow: column-reverse wrap;
+    }
+
+    #docs-page-right-column {
+        margin: 0 1em;
+    }
+
+    #docs-page-left-column {
+        max-width: 100%;
+        min-width: 100%;
+        margin: 0
+    }
 }
 
 /* One-column page */
