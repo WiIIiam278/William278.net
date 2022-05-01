@@ -286,6 +286,7 @@ code {
     padding: 0.6em;
     width: 20%;
     flex: 1;
+    max-height: 75px;
 }
 
 .main-page-product .main-page-product-buttons {
