@@ -1,5 +1,6 @@
 const http = require("http");
 const fs = require('fs');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const sanitizeFileName = require('sanitize-filename')
 const wikiLinks = require('markdown-it-wikilinks')({
     postProcessPageName: (pageName) => {
@@ -126,10 +127,12 @@ function handleWebhook(requestPath, request, response) {
 function sendRequestedPage(targetResourcePath, response) {
     for (let i = 0; i < CHECK_DOCUMENT_ENDS.length; i++) {
         let pathToCheck = targetResourcePath + CHECK_DOCUMENT_ENDS[i];
-        if (fs.existsSync(pathToCheck)) {
-            if (fs.statSync(pathToCheck).isDirectory()) {
-                sendRequestedPage(pathToCheck + '/index.html', response);
-                return;
+        if (fs.existsSync(pathToCheck) || pathToCheck.startsWith("frontend/transcript")) {
+            if (!pathToCheck.startsWith("frontend/transcript")) {
+                if (fs.statSync(pathToCheck).isDirectory()) {
+                    sendRequestedPage(pathToCheck + '/index.html', response);
+                    return;
+                }
             }
             sendPage(response, fs, pathToCheck);
             return;
@@ -168,6 +171,35 @@ function sendPage(response, fs, targetPath) {
             'Content-Type': 'image/svg+xml'
         });
         fs.createReadStream(targetPath).pipe(response)
+        return;
+    }
+
+    if (targetPath.startsWith("frontend/transcript")) {
+        try {
+            let ticketFormat = fs.readFileSync("frontend/ticket.html", "utf8");
+            let targetUrl = targetPath.split("?")[1];
+            fetch(targetUrl).then(response => {
+                if (response.status !== 200) {
+                    throw "Invalid URL specified!";
+                }
+                return response.text();
+            }).then(responseText => {
+                let responseHtml = responseText.replace("<html>", "")
+                    .replace("</html>", "")
+                    .replace("<!DOCTYPE html>", "");
+                ticketFormat = ticketFormat.replace("{{TRANSCRIPT_INFO}}", "");
+                ticketFormat = ticketFormat.replace("{{TRANSCRIPT_CONTENT}}", responseHtml);
+                response.writeHead(200);
+                response.end(ticketFormat);
+            }).catch(error => {
+                console.log("Failed to fetch URL: " + targetUrl + " (" + error + ")")
+                response.writeHead(404);
+                fs.createReadStream('frontend/404.html').pipe(response);
+            })
+        } catch (error) {
+            response.writeHead(404);
+            fs.createReadStream('frontend/404.html').pipe(response);
+        }
         return;
     }
 

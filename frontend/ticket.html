@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic site settings -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+    <!-- Site title and description -->
+    <title>William278 - Ticket Archive</title>
+    <meta name="description" content="View an archive of a HuskHelp support ticket."/>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./style.css">
+
+    <!-- Ticket page script -->
+
+    <!-- Google fonts (for Nunito font) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic"/>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/svg" href="./images/icons/huskhelp.svg"/>
+
+    <!-- Loads the header and footer -->
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+        $(function () {
+            $("header").load("../navbar.html");
+            $("footer").load("../footer.html");
+        });
+    </script>
+
+    <!-- FontAwesome -->
+    <script src="https://kit.fontawesome.com/aa4c023dda.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<header></header>
+<main>
+    <div id="docs-page-two-column">
+        <div id="docs-page-left-column">
+            <a id="docs-page-back-link" href="./">&#8592;&nbsp;Home</a>
+            <div id="docs-page-sidebar-content">
+                <h2>Ticket overview</h2>
+                {{TRANSCRIPT_INFO}}
+            </div>
+        </div>
+        <div id="docs-page-right-column">
+            <div id="docs-page-content">
+                <h2>Transcript</h2>
+                {{TRANSCRIPT_CONTENT}}
+            </div>
+        </div>
+    </div>
+</main>
+<footer></footer>
+</body>
+</html>
