@@ -198,12 +198,12 @@ function sendPage(response, fs, targetPath) {
                 return;
             }
 
-            if (cachedTicketFiles.has(formattedUrl)) {
-                if (cachedTicketFiles.get(formattedUrl).expiry > new Date()) {
-                    cachedTicketFiles.delete(formattedUrl);
+            if (cachedTicketFiles.has(targetUrl)) {
+                if (cachedTicketFiles.get(targetUrl).expiry > new Date()) {
+                    cachedTicketFiles.delete(targetUrl);
                 } else {
                     response.writeHead(200);
-                    response.end(cachedTicketFiles.get(formattedUrl).page);
+                    response.end(cachedTicketFiles.get(targetUrl).page);
                     return;
                 }
             }
@@ -222,7 +222,7 @@ function sendPage(response, fs, targetPath) {
                     .replace("<!DOCTYPE html>", "");
                 ticketFormat = ticketFormat.replace("{{TRANSCRIPT_INFO}}", "");
                 ticketFormat = ticketFormat.replace("{{TRANSCRIPT_CONTENT}}", responseHtml);
-                cachedTicketFiles.set(formattedUrl, {
+                cachedTicketFiles.set(targetUrl, {
                     "page": ticketFormat,
                     "expiry": new Date().getHours() + 3
                 });
