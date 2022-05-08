@@ -362,8 +362,8 @@ code {
 /* Transcript formatting */
 .discord-message {
     background-color: var(--main-gray);
-    padding: 1em;
-    border-radius: 1em;
+    padding: 0.8em 0.8em 1em;
+    border-radius: 0.5em;
     margin-top: 1em;
 }
 
@@ -377,6 +377,11 @@ code {
     margin-left: 0.5em;
     font-weight: bold;
     margin-top: 0.5em;
+}
+
+.message-sender-numbers {
+    color: var(--main-light-gray);
+    font-weight: normal;
 }
 
 .message-sender img {
@@ -402,6 +407,24 @@ code {
 
 .d-user {
     color: var(--accent-color);
+}
+
+.d-channel {
+    color: var(--accent-color);
+}
+
+.d-role {
+    /*color: var(--accent-color);*/
+}
+
+.d-emoji {
+    max-width: 1.4em;
+    display: inline;
+    vertical-align: top;
+}
+
+.message-attachment {
+    max-width: 300px;
 }
 
 .discord-embed {
