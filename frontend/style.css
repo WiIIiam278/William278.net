@@ -367,36 +367,49 @@ code {
     margin-top: 1em;
 }
 
-.message-sender {
+.message-timestamp {
+    font-size: small;
+    color: var(--main-light-gray);
+    vertical-align: bottom;
+    margin-left: 3.7em;
+    display: block;
+    margin-bottom: 1em;
+}
 
+.message-edited-indicator {
+    color: var(--main-light-gray);
+    font-size: small;
+    display: inline;
 }
 
 .message-sender-name {
-    display: inline-block;
     vertical-align: top;
+    margin-top: 0.1em;
     margin-left: 0.5em;
     font-weight: bold;
-    margin-top: 0.5em;
+    display: inline-block;
 }
 
 .message-sender-numbers {
     color: var(--main-light-gray);
     font-weight: normal;
+    display: inline;
 }
 
 .message-sender img {
     max-width: 40px;
     border-radius: 100%;
     display: inline-block;
+    float: left;
 }
 
 .discord-embed {
     vertical-align: top;
-    margin-left: 3.2em;
+    margin-left: 3.1em;
 }
 
 .message {
-    margin-left: 3.2em;
+    margin-left: 3.1em;
 }
 
 .d-mention {
