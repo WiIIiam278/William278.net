@@ -23,6 +23,7 @@ const appRoot = require('app-root-path');
 const {PROJECTS} = require(`${appRoot}/frontend/projects`);
 
 const DOCS_PAGE_TEMPLATE = fs.readFileSync('frontend/docs/docs.html').toString();
+const BLANK_PAGE_TEMPLATE = fs.readFileSync('frontend/blank.html').toString();
 const CHECK_DOCUMENT_ENDS = ['', '.html', '.md']
 
 const HOST = process.env.HOST || 'localhost';
@@ -146,22 +147,32 @@ function sendRequestedPage(targetResourcePath, response) {
 function sendPage(response, fs, targetPath) {
     // Render MarkDown to html file
     if (targetPath.endsWith('.md')) {
-        let contentMarkDown = md.render(fs.readFileSync(targetPath).toString());
         let sideBarMarkDown = '';
-        const SIDEBAR_PATH = targetPath.replace(targetPath.substring(targetPath.lastIndexOf('/') + 1), '_Sidebar.md');
-        if (fs.existsSync(SIDEBAR_PATH)) {
-            sideBarMarkDown = md.render(fs.readFileSync(SIDEBAR_PATH).toString());
+        let contentMarkDown = md.render(fs.readFileSync(targetPath).toString());
+        let template = BLANK_PAGE_TEMPLATE;
+
+        if (targetPath.startsWith("frontend/docs")) {
+            const SIDEBAR_PATH = targetPath.replace(targetPath.substring(targetPath.lastIndexOf('/') + 1), '_Sidebar.md');
+            if (fs.existsSync(SIDEBAR_PATH)) {
+                sideBarMarkDown = md.render(fs.readFileSync(SIDEBAR_PATH).toString());
+            }
+            template = DOCS_PAGE_TEMPLATE;
         }
+
         let pageTitle = targetPath.substring(targetPath.lastIndexOf('/') + 1)
             .replace('-', ' ')
             .replace('.md', '');
 
+        // Capitalize first letter
+        pageTitle = pageTitle.charAt(0).toUpperCase() + pageTitle.slice(1);
+
+
         response.writeHead(200);
-        response.end(DOCS_PAGE_TEMPLATE.replace('{DOCS_PAGE_SIDEBAR_CONTENT}', sideBarMarkDown)
-            .replace('{DOCS_PAGE_CONTENT}', contentMarkDown)
+        response.end(template.replace('{PAGE_SIDEBAR_CONTENT}', sideBarMarkDown)
+            .replace('{PAGE_CONTENT}', contentMarkDown)
             .replace('{PROJECT_TITLE}', targetPath.split('/')[2])
-            .replace('{DOCS_PAGE_TITLE}', pageTitle)
-            .replace('{DOCS_PAGE_TITLE}', pageTitle));
+            .replace('{PAGE_TITLE}', pageTitle)
+            .replace('{PAGE_TITLE}', pageTitle));
         return;
     }
 

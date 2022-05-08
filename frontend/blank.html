@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic site settings -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+
+    <!-- Site title and description -->
+    <title>William278 - {PAGE_TITLE}</title>
+    <meta name="description" content="William278.net - {PAGE_TITLE}"/>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./prism.css">
+
+    <!-- Google fonts (for Nunito font) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/svg" href="./images/icons/huskhelp.svg"/>
+
+    <!-- Loads the header and footer -->
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+        $(function () {
+            $("header").load("./navbar.html");
+            $("footer").load("./footer.html");
+        });
+    </script>
+
+    <!-- FontAwesome -->
+    <script src="https://kit.fontawesome.com/aa4c023dda.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<header></header>
+<main>
+    <div id="one-column-page-text">
+        {PAGE_CONTENT}
+    </div>
+</main>
+<footer></footer>
+</body>
+</html>
