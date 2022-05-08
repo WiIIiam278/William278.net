@@ -29,6 +29,8 @@ const CHECK_DOCUMENT_ENDS = ['', '.html', '.md']
 const HOST = process.env.HOST || 'localhost';
 const PORT = process.env.PORT || 8000;
 
+const cachedTicketFiles = new Map();
+
 function fetchPlugin(repository, name) {
     let wikiRepository = repository + '.wiki.git';
     const filePath = `${appRoot}/frontend/docs/${name.toLowerCase()}`;
@@ -195,6 +197,17 @@ function sendPage(response, fs, targetPath) {
                 fs.createReadStream('frontend/404.html').pipe(response);
                 return;
             }
+
+            if (cachedTicketFiles.has(formattedUrl)) {
+                if (cachedTicketFiles.get(formattedUrl).expiry > new Date()) {
+                    cachedTicketFiles.delete(formattedUrl);
+                } else {
+                    response.writeHead(200);
+                    response.end(cachedTicketFiles.get(formattedUrl).page);
+                    return;
+                }
+            }
+
             fetch(targetUrl).then(response => {
                 if (response.status !== 200) {
                     throw response.status;
@@ -209,6 +222,10 @@ function sendPage(response, fs, targetPath) {
                     .replace("<!DOCTYPE html>", "");
                 ticketFormat = ticketFormat.replace("{{TRANSCRIPT_INFO}}", "");
                 ticketFormat = ticketFormat.replace("{{TRANSCRIPT_CONTENT}}", responseHtml);
+                cachedTicketFiles.set(formattedUrl, {
+                    "page": ticketFormat,
+                    "expiry": new Date().getHours() + 3
+                });
                 response.writeHead(200);
                 response.end(ticketFormat);
             }).catch(error => {
