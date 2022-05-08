@@ -178,9 +178,18 @@ function sendPage(response, fs, targetPath) {
         try {
             let ticketFormat = fs.readFileSync("frontend/ticket.html", "utf8");
             let targetUrl = targetPath.split("?")[1];
+            let formattedUrl = new URL(targetUrl);
+            if (formattedUrl.hostname !== "cdn.discordapp.com") {
+                response.writeHead(404);
+                fs.createReadStream('frontend/404.html').pipe(response);
+                return;
+            }
             fetch(targetUrl).then(response => {
                 if (response.status !== 200) {
                     throw "Invalid URL specified!";
+                }
+                if (!response.headers.get("Content-Disposition").endsWith(".html")) {
+                    throw "Invalid file type!";
                 }
                 return response.text();
             }).then(responseText => {
