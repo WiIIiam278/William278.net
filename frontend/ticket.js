@@ -22,4 +22,31 @@ window.onload = () => {
         timestampText += " at " + hours + ":" + minutes;
         timestamps[i].innerHTML = timestampText;
     }
+
+    // Let people view images nicely
+    let images = document.getElementsByClassName("message-attachment");
+    for (let i = 0; i < images.length; i++) {
+        const viewer = new Viewer(images[i], {
+            inline: false,
+            navbar: false,
+            title: false,
+            toolbar: false,
+            fullscreen: false,
+            loop: false,
+            movable: false,
+            rotatable: false,
+            scalable: false,
+            zoomable: false,
+            zoomOnWheel: false,
+            zoomOnTouch: false,
+            slideOnTouch: false,
+            toggleOnDblclick: false,
+            tooltip: false,
+            transition: false,
+        });
+
+        images[i].addEventListener("click", function () {
+            viewer.show(true);
+        });
+    }
 };

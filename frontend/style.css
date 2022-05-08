@@ -319,6 +319,9 @@ code {
     max-width: 250px;
     min-width: 250px;
     background-color: var(--main-gray);
+    border-radius: 0.5em;
+    height: fit-content !important;
+    margin-top: 1em;
 }
 
 #docs-page-right-column {
@@ -438,6 +441,14 @@ code {
 
 .message-attachment {
     max-width: 400px;
+    background-color: var(--main-background);
+    margin-left: 3.1em;
+    border-radius: 0.25em;
+}
+
+.message-attachment:hover {
+    cursor: pointer;
+    filter: brightness(75%);
 }
 
 .discord-embed {
