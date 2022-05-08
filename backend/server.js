@@ -186,10 +186,10 @@ function sendPage(response, fs, targetPath) {
             }
             fetch(targetUrl).then(response => {
                 if (response.status !== 200) {
-                    throw "Invalid URL specified!";
+                    throw response.status;
                 }
                 if (!response.headers.get("Content-Disposition").endsWith(".html")) {
-                    throw "Invalid file type!";
+                    throw 400;
                 }
                 return response.text();
             }).then(responseText => {
@@ -201,13 +201,10 @@ function sendPage(response, fs, targetPath) {
                 response.writeHead(200);
                 response.end(ticketFormat);
             }).catch(error => {
-                console.log("Failed to fetch URL: " + targetUrl + " (" + error + ")")
-                response.writeHead(404);
-                fs.createReadStream('frontend/404.html').pipe(response);
+                handleTicketFetchError(error, response);
             })
         } catch (error) {
-            response.writeHead(404);
-            fs.createReadStream('frontend/404.html').pipe(response);
+            handleTicketFetchError(error, response);
         }
         return;
     }
@@ -223,3 +220,22 @@ server.listen(PORT, HOST, () => {
     console.log(`Server is running on ${HOST}:${PORT}`);
     console.log('[Pterodactyl] Ready');
 });
+
+function handleTicketFetchError(error, response) {
+    if (typeof error === "number") {
+        switch (parseInt(error)) {
+            case 403:
+                response.writeHead(429);
+                fs.createReadStream('frontend/429.html').pipe(response);
+                return;
+            case 400:
+                response.writeHead(400);
+                fs.createReadStream('frontend/400.html').pipe(response);
+                return;
+        }
+    } else {
+        console.log("Unexpected error: " + error);
+    }
+    response.writeHead(404);
+    fs.createReadStream('frontend/404.html').pipe(response);
+}
