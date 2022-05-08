@@ -3,14 +3,25 @@ window.onload = () => {
     for (let i = 0; i < timestamps.length; i++) {
         let timestampInt = parseInt(timestamps[i].innerHTML);
         let timestamp = new Date(timestampInt);
-        let timestampText;
-        if (timestamp > (new Date(timestampInt).getDate() - 1)) {
-            timestampText = "Today";
-        } else if (timestamp > (new Date(timestampInt).getDate() - 2)) {
+
+        let todayStamp = new Date();
+        todayStamp.setHours(0, 0, 0, 0);
+
+        const yesterdayStamp = new Date(todayStamp);
+        yesterdayStamp.setDate(yesterdayStamp.getDate() - 1);
+
+        let timestampText = timestamp.toLocaleString('default', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+        if (timestamp >= yesterdayStamp) {
             timestampText = "Yesterday";
-        } else {
-            timestampText = timestamp.getDay() + " " + timestamp.getMonth() + " " + timestamp.getFullYear();
         }
+        if (timestamp >= todayStamp) {
+            timestampText = "Today";
+        }
+
         let hours = timestamp.getHours().toString();
         if (hours.length === 1) {
             hours = "0" + hours;
