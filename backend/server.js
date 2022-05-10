@@ -220,7 +220,6 @@ function sendPage(response, fs, targetPath) {
                 let responseHtml = responseText.replace("<html>", "")
                     .replace("</html>", "")
                     .replace("<!DOCTYPE html>", "");
-                ticketFormat = ticketFormat.replace("{{TRANSCRIPT_INFO}}", "");
                 ticketFormat = ticketFormat.replace("{{TRANSCRIPT_CONTENT}}", responseHtml);
                 cachedTicketFiles.set(targetUrl, {
                     "page": ticketFormat,
