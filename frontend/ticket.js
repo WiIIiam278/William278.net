@@ -15,8 +15,8 @@ window.onload = () => {
             + "<b>Closed: </b>" + getTimestampText(parseInt(metaDataObject.closed_timestamp)) + "<br/>"
             + "<h3>Participants</h3>";
 
-        for (let j = 0; j < metaDataObject.pariticipants.length; j++) {
-            let participant = metaDataObject.pariticipants[j];
+        for (let j = 0; j < metaDataObject.participants.length; j++) {
+            let participant = metaDataObject.participants[j];
             formattedMeta += "<div class='message-sender'><img style='max-height: 35px' src='" + participant.avatar + "' alt='Profile picture'/>";
             formattedMeta += "<div class='message-sender-name' style='margin-top: 0.35em'>" + participant.name + "<span class='message-sender-numbers'>" + participant.numbers + "</span></div>";
             formattedMeta += "</div> <br/>";
