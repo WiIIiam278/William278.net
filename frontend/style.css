@@ -406,6 +406,25 @@ code {
     float: left;
 }
 
+.message-link {
+    padding: 0.75em;
+    border-radius: 0.25em;
+    border-left: var(--accent-color) 0.3em solid;
+    background-color: var(--main-background);
+    margin-left: 3.1em;
+    line-height: 3em;
+}
+
+.message-link::before {
+    content: '≡';
+    padding: 0 0.15em;
+    background-color: var(--accent-color);
+    border-radius: 0.15em 0.4em 0.15em 0.15em;
+    margin-right: 0.5em;
+    font-size: larger;
+    color: var(--main-background);
+}
+
 .discord-embed {
     vertical-align: top;
     margin-left: 3.1em;
@@ -441,6 +460,15 @@ code {
 
 .message-attachment {
     max-width: 400px;
+    height: auto;
+    background-color: var(--main-background);
+    margin-left: 3.1em;
+    border-radius: 0.25em;
+}
+
+.attachment-video {
+    max-width: 400px;
+    height: auto;
     background-color: var(--main-background);
     margin-left: 3.1em;
     border-radius: 0.25em;
