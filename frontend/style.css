@@ -438,13 +438,35 @@ code {
 }
 
 .embed-image {
-    max-width: 200px;
+    max-width: 250px;
     display: block;
-    margin-top: 0.5em;
+    margin: 0.5em 0;
 }
 
 .embed-content {
+    display: inline;
+}
+
+.embed-field {
+    margin: 0;
+}
+
+.inline-true {
     display: inline-block;
+    width: fit-content;
+    margin-right: 0.4em;
+}
+
+.inline-true .field-value {
+    width: 60%;
+}
+
+.inline-true .field-name {
+    width: 60%;
+}
+
+.inline-false {
+    width: 100%;
 }
 
 .message {
@@ -512,6 +534,5 @@ code {
 }
 
 .embed-footer {
-    font-weight: bold;
     font-size: smaller;
 }
