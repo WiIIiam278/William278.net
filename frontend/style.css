@@ -428,6 +428,23 @@ code {
 .discord-embed {
     vertical-align: top;
     margin-left: 3.1em;
+    flex-direction: column;
+    width: fit-content;
+}
+
+.embed-thumbnail {
+    float: right;
+    max-width: 70px;
+}
+
+.embed-image {
+    max-width: 200px;
+    display: block;
+    margin-top: 0.5em;
+}
+
+.embed-content {
+    display: inline-block;
 }
 
 .message {
