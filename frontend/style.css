@@ -473,6 +473,13 @@ code {
     margin-left: 3.1em;
 }
 
+.message blockquote {
+    background-color: var(--main-gray) !important;
+    padding: 0 0 0 1em !important;
+    border-radius: 0 !important;
+    border-left: 0.25em solid var(--main-light-gray) !important;
+}
+
 .d-mention {
     background-color: var(--main-background);
     padding: 0.1em 0.3em;
