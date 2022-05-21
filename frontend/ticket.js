@@ -26,30 +26,33 @@ window.onload = () => {
     }
 
     // Let people view images nicely
-    let images = document.getElementsByClassName("message-attachment");
-    for (let i = 0; i < images.length; i++) {
-        const viewer = new Viewer(images[i], {
-            inline: false,
-            navbar: false,
-            title: false,
-            toolbar: false,
-            fullscreen: false,
-            loop: false,
-            movable: false,
-            rotatable: false,
-            scalable: false,
-            zoomable: false,
-            zoomOnWheel: false,
-            zoomOnTouch: false,
-            slideOnTouch: false,
-            toggleOnDblclick: false,
-            tooltip: false,
-            transition: false,
-        });
+    const CLASS_NAMES = ["message-attachment", "embed-image", "embed-thumbnail"]
+    for (let j = 0; j < CLASS_NAMES.length; j++) {
+        let images = document.getElementsByClassName(CLASS_NAMES[j]);
+        for (let i = 0; i < images.length; i++) {
+            const viewer = new Viewer(images[i], {
+                inline: false,
+                navbar: false,
+                title: false,
+                toolbar: false,
+                fullscreen: false,
+                loop: false,
+                movable: false,
+                rotatable: false,
+                scalable: false,
+                zoomable: false,
+                zoomOnWheel: false,
+                zoomOnTouch: false,
+                slideOnTouch: false,
+                toggleOnDblclick: false,
+                tooltip: false,
+                transition: false,
+            });
 
-        images[i].addEventListener("click", function () {
-            viewer.show(true);
-        });
+            images[i].addEventListener("click", function () {
+                viewer.show(true);
+            });
+        }
     }
 };
 

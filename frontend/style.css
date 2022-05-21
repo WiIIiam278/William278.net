@@ -435,6 +435,7 @@ code {
 .embed-thumbnail {
     float: right;
     max-width: 70px;
+    min-height: fit-content;
 }
 
 .embed-image {
@@ -471,13 +472,15 @@ code {
 
 .message {
     margin-left: 3.1em;
+    margin-bottom: 0.3em;
 }
 
 .message blockquote {
     background-color: var(--main-gray) !important;
-    padding: 0 0 0 1em !important;
+    padding: 0 0 0 0.7em !important;
     border-radius: 0 !important;
     border-left: 0.25em solid var(--main-light-gray) !important;
+    margin: 0.3em 0 0.3em;
 }
 
 .d-mention {
@@ -517,6 +520,7 @@ code {
     height: auto;
     background-color: var(--main-background);
     margin-left: 3.1em;
+    margin-bottom: 0.3em;
     border-radius: 0.25em;
 }
 
@@ -525,11 +529,22 @@ code {
     filter: brightness(75%);
 }
 
+.embed-thumbnail:hover {
+    cursor: pointer;
+}
+
+.embed-image:hover {
+    cursor: pointer;
+}
+
 .discord-embed {
     background-color: var(--main-background);
     padding: 0.75em;
     border-radius: 0.25em;
     border-left: var(--accent-color) 0.3em solid;
+    display: inline-block;
+    min-height: fit-content !important;
+    margin-bottom: 0.3em;
 }
 
 .embed-content {
