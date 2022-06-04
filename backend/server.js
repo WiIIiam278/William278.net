@@ -147,13 +147,19 @@ function sendRequestedPage(targetResourcePath, response) {
 }
 
 function sendPage(response, fs, targetPath) {
+    if (targetPath.startsWith('frontend/download')) {
+        response.writeHead(200, {'content-type': 'application/octet-stream'});
+        fs.createReadStream(targetPath).pipe(response);
+        return;
+    }
+
     // Render MarkDown to html file
     if (targetPath.endsWith('.md')) {
         let sideBarMarkDown = '';
         let contentMarkDown = md.render(fs.readFileSync(targetPath).toString());
         let template = BLANK_PAGE_TEMPLATE;
 
-        if (targetPath.startsWith("frontend/docs")) {
+        if (targetPath.startsWith('frontend/docs')) {
             const SIDEBAR_PATH = targetPath.replace(targetPath.substring(targetPath.lastIndexOf('/') + 1), '_Sidebar.md');
             if (fs.existsSync(SIDEBAR_PATH)) {
                 sideBarMarkDown = md.render(fs.readFileSync(SIDEBAR_PATH).toString());
@@ -187,7 +193,7 @@ function sendPage(response, fs, targetPath) {
         return;
     }
 
-    if (targetPath.startsWith("frontend/transcript")) {
+    if (targetPath.startsWith('frontend/transcript')) {
         try {
             let ticketFormat = fs.readFileSync("frontend/ticket.html", "utf8");
             let targetUrl = targetPath.split("?")[1];
