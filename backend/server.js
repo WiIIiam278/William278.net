@@ -148,8 +148,13 @@ function sendRequestedPage(targetResourcePath, response) {
 
 function sendPage(response, fs, targetPath) {
     if (targetPath.startsWith('frontend/download')) {
-        response.writeHead(200, {'content-type': 'application/octet-stream'});
-        fs.createReadStream(targetPath).pipe(response);
+        fs.stat(targetPath).then(stats => {
+            response.writeHead(200, {
+                'content-type': 'application/octet-stream',
+                'content-length': stats.size
+            });
+            fs.createReadStream(targetPath).pipe(response);
+        });
         return;
     }
 
