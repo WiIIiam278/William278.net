@@ -19,7 +19,7 @@ const PROJECTS = [
             songoda: 'https://songoda.com/marketplace/product/husksync-a-modern-cross-server-player-data-synchronization-system.758'
         },
         tagline: 'A modern, cross-server player data synchronisation system',
-        documentation: false,
+        documentation: true,
         icon: 'husksync.svg'
     },
     {
