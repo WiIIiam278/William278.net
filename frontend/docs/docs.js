@@ -13,7 +13,7 @@ window.onload = () => {
 
     let links = document.getElementsByTagName('a');
     for (let i = 0; i < links.length; i++) {
-        if (!links[i].hostname.endsWith("william278.net")) {
+        if (links[i].hostname !== window.location.hostname && (links[i].innerText.length > 0)) {
             links[i].innerHTML += '&nbsp;<i class="fa-solid fa-arrow-up-right-from-square"></i>'
         }
     }
