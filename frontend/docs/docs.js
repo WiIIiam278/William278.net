@@ -6,8 +6,15 @@ window.onload = () => {
         }
     });
 
-    let elements = document.getElementsByClassName('docs-page-product-list');
-    for (let i = 0; i < elements.length; i++) {
-        elements[i].innerHTML = pluginList;
+    let productList = document.getElementsByClassName('docs-page-product-list');
+    for (let i = 0; i < productList.length; i++) {
+        productList[i].innerHTML = pluginList;
+    }
+
+    let links = document.getElementsByTagName('a');
+    for (let i = 0; i < links.length; i++) {
+        if (!links[i].hostname.endsWith("william278.net")) {
+            links[i].innerHTML += '&nbsp;<i class="fa-solid fa-arrow-up-right-from-square"></i>'
+        }
     }
 }
