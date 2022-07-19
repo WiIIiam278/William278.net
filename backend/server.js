@@ -221,7 +221,8 @@ function sendPage(response, fs, targetPath) {
                 if (response.status !== 200) {
                     throw response.status;
                 }
-                if (!response.headers.get("Content-Disposition").endsWith(".html")) {
+                if (!response.headers.get("Content-Disposition").endsWith(".html, attachment")) {
+                    console.log("Attempted to parse an invalid html file " + response.headers.get("Content-Disposition"));
                     throw 400;
                 }
                 return response.text();
