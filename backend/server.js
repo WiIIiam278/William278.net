@@ -1,278 +1,285 @@
-const http = require("http");
+const express = require('express');
+const path = require('path');
 const fs = require('fs');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-const sanitizeFileName = require('sanitize-filename')
-const wikiLinks = require('markdown-it-wikilinks')({
+const git = require('git-clone-or-pull');
+const sitemap = require('express-sitemap');
+
+// Spiget fetching
+const {Spiget} = require('spiget');
+const spiget = new Spiget("William278UpdateApi");
+
+// GitHub flavoured Markdown parsing
+const MarkdownIt = require('markdown-it');
+const markdown = new MarkdownIt({
+    html: true,
+    xhtmlOut: true,
+    breaks: true
+}).use(require('markdown-it-wikilinks')({
     postProcessPageName: (pageName) => {
         pageName = pageName.trim()
-        pageName = pageName.split('/').map(sanitizeFileName).join('/')
+        pageName = pageName.split('/').map(require('sanitize-filename')).join('/')
         pageName = pageName.replace(/\s+/, '-')
         return pageName
     },
     uriSuffix: ''
-})
-const prism = require('markdown-it-prism');
-const MarkdownIt = require('markdown-it'), md = new MarkdownIt({
-    html: true,
-    xhtmlOut: true,
-    breaks: true
-}).use(wikiLinks).use(prism, {defaultLanguage: 'yml'});
-const gitPullOrClone = require('git-clone-or-pull');
-const appRoot = require('app-root-path');
+})).use(require('markdown-it-anchor'))
+    .use(require('markdown-it-prism'), {
+        defaultLanguage: 'yml'
+    });
 
-const {PROJECTS} = require(`${appRoot}/frontend/projects`);
+// App setup
+const app = express();
+const host = process.env.HOST || 'localhost';
+const port = process.env.PORT || 8000;
+const frontend = path.join(__dirname, '../frontend');
+const projects = JSON.parse(fs.readFileSync(path.join(__dirname, 'projects.json'), 'utf8'));
 
-const DOCS_PAGE_TEMPLATE = fs.readFileSync('frontend/docs/docs.html').toString();
-const BLANK_PAGE_TEMPLATE = fs.readFileSync('frontend/readme.html').toString();
-const CHECK_DOCUMENT_ENDS = ['', '.html', '.md']
+// Special page templates
+const ticket = fs.readFileSync(path.join(__dirname, 'template/ticket.html'), 'utf8');
+const readme = fs.readFileSync(path.join(__dirname, 'template/readme.html'), 'utf8');
+const docs = fs.readFileSync(path.join(__dirname, 'template/docs.html'), 'utf8');
+const error = fs.readFileSync(path.join(__dirname, 'template/error.html'), 'utf8');
 
-const HOST = process.env.HOST || 'localhost';
-const PORT = process.env.PORT || 8000;
+// Handle transcripts
+app.get('/transcript', (req, res) => {
+    if (!req.url.endsWith('.html')) {
+        if (!fs.existsSync(req.url)) {
+            sendError(res, '404');
+            return;
+        }
+        res.sendFile(req.url, {root: frontend});
+        return;
+    }
+    let key = Object.keys(req.query)[0];
+    if (key && key.length > 0) {
+        try {
+            let url = new URL(key);
+            if (url.hostname !== 'cdn.discordapp.com') {
+                sendError(res, '400', 'Invalid hostname.');
+                return;
+            }
+        } catch (error) {
+            sendError(res, '400', 'Invalid URL.');
+            return;
+        }
+        fetch(key).then(response => {
+            if (response.status !== 200) {
+                throw response.status;
+            }
+            if (!response.headers.get("Content-Disposition").endsWith(".html, attachment")) {
+                console.log("Attempted to parse an invalid html file " + response.headers.get("Content-Disposition"));
+                throw 400;
+            }
+            return response.text();
+        }).then(html => {
+            return html.replace("<html>", "")
+                .replace("</html>", "")
+                .replace("<!DOCTYPE html>", "");
+        }).then(html => {
+            return formatTemplate(ticket, {'TRANSCRIPT_CONTENT': html});
+        }).then(ticket => {
+            res.send(ticket);
+        }).catch(code => {
+            sendError(res, code, 'That transcript is invalid or has expired.');
+        });
+        return;
+    }
+    sendError(res, '400', 'Bad request.');
+});
 
-const cachedTicketFiles = new Map();
+// Serve documentation pages
+app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
+    // Serve page with markdown
+    let name = req.params.name.toLowerCase();
+    if (!req.params.page) {
+        res.redirect(`/docs/${name}/Home`);
+        return;
+    }
+    let page = req.params.page.toLowerCase();
 
-function fetchPlugin(repository, name) {
-    let wikiRepository = repository + '.wiki.git';
-    const filePath = `${appRoot}/frontend/docs/${name.toLowerCase()}`;
-    gitPullOrClone(wikiRepository, filePath, function (err) {
+    // Find project with documentation by name
+    let project = projects.find(project => project.name.toLowerCase() === name);
+    if (!project) {
+        sendError(res, '404', 'Invalid product.');
+        return;
+    }
+    if (!project.documentation) {
+        sendError(res, '404', 'There are no documentation pages for this product.');
+        return;
+    }
+
+    // Send the page
+    let pagePath = path.join(frontend, `docs/${name.toLowerCase()}/${page}.md`);
+    if (fs.existsSync(pagePath)) {
+        let sidebarPath = path.join(frontend, `docs/${name.toLowerCase()}/_Sidebar.md`);
+        if (fs.existsSync(sidebarPath)) {
+            res.send(formatTemplate(docs, {
+                'PAGE_CONTENT': markdown.render(fs.readFileSync(pagePath, 'utf8')),
+                'SIDEBAR_CONTENT': markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
+                'PAGE_TITLE': req.params.page.replace(/-/g, ' '),
+                'PROJECT_NAME': project.name,
+            }));
+        }
+    } else {
+        sendError(res, '404', 'Documentation page not found.');
+    }
+});
+
+
+// Handle post requests to update project documentation
+app.post('/api/update-docs', (req, res) => {
+    const name = req.body.name;
+    const repository = req.body.repository;
+    if (name && repository) {
+        // Validate that projects contains the project
+        if (projects.find(project => project.repository === repository && project.name.toLowerCase() === name.toLowerCase())) {
+            updateDocs(repository, name);
+            res.status(200).send('OK');
+        }
+    }
+    res.status(400).send('Bad request');
+});
+
+
+// Serves a list of all projects and data
+app.get('/api/projects', (req, res) => {
+    res.send(projects);
+});
+
+
+// Serves data about a specific project by name
+app.get('/api/projects/:name', (req, res) => {
+    const name = req.params.name;
+    const project = projects.find(project => project.name.toLowerCase() === name.toLowerCase());
+    if (project) {
+        res.send(project);
+    } else {
+        res.status(404).send('Not found');
+    }
+});
+
+// Serves data about the latest version of a specific project by name via Spiget
+app.get('/api/projects/:name/version', (req, res) => {
+    const project = projects.find(project => project.name.toLowerCase() === req.params.name.toLowerCase());
+    if (project) {
+        let id = project.ids.spigot;
+        if (id) {
+            spiget.getLatestResourceVersion(id).then(resource => {
+                res.send({
+                    name: project.name,
+                    version: resource.name,
+                    date: resource.releaseDate
+                });
+            });
+        } else {
+            res.status(400).send('No Spigot ID for project');
+        }
+    } else {
+        res.status(404).send('Not found');
+    }
+});
+
+// Prepare the sitemap and server settings
+app.use(express.static(frontend));
+let map = sitemap({generate: app});
+
+// Handle sitemap requests
+app.get('/sitemap.xml', (req, res) => {
+    map.XMLtoWeb(res);
+});
+
+// Handle robots.txt requests
+app.get('/robots.txt', (req, res) => {
+    map.TXTtoWeb(res);
+});
+
+
+// Handle all other page requests
+app.get('*', (req, res) => {
+    let fullUrl = path.join(frontend, req.url);
+    let urlModifiers = '';
+
+    // If the file doesn't exist, serve the 404 page
+    if (!fs.existsSync(fullUrl)) {
+        if (!fs.existsSync(fullUrl + '.html')) {
+            if (!fs.existsSync(fullUrl + '.md')) {
+                sendError(res, '404');
+                return;
+            } else {
+                urlModifiers = '.md';
+            }
+        } else {
+            urlModifiers = '.html';
+        }
+    }
+
+    // If the request is for a directory, serve the index.html file
+    if (fs.lstatSync(fullUrl + urlModifiers).isDirectory()) {
+        res.sendFile(path.join(req.url, 'index.html'), {root: frontend});
+    }
+
+    // If the request is for a file, serve it with the correct encoding
+    else {
+        // If the file is a .md file, parse it and serve it as HTML
+        if (fullUrl.endsWith('.md') || urlModifiers === '.md') {
+            res.send(formatTemplate(readme, {
+                'PAGE_CONTENT': markdown.render(fs.readFileSync(path
+                    .join(frontend, req.url + urlModifiers), 'utf8'))
+            }));
+        } else {
+            res.sendFile(req.url + urlModifiers, {root: frontend});
+        }
+    }
+});
+
+
+const sendError = (res, code, message) => {
+    res.send(formatTemplate(error, {
+        'ERROR_CODE': code,
+        'ERROR_DESCRIPTION': message ? message : 'Make sure you entered the correct URL.'
+    }));
+}
+
+
+// Updates plugin documentation
+const updateDocs = (repository, name) => {
+    let wiki = repository + '.wiki.git';
+    const filePath = path.join(frontend, `docs/${name.toLowerCase()}`);
+    git(wiki, filePath, function (err) {
         if (err) {
-            console.error('Error pulling ' + wikiRepository + ' to ' + filePath)
+            console.error('An error occurred pulling ' + wiki + ' to ' + filePath)
             console.error(err);
             return;
         }
-        console.log('Updated ' + name);
+        console.log('Updated project documentation for ' + name);
     });
 }
 
-// Fetch repositories
-for (let i = 0; i < PROJECTS.length; i++) {
-    let project = PROJECTS[i];
-    if (project.documentation === true) {
-        fetchPlugin(project.repository, project.name);
-    }
-}
 
-const requestListener = function (request, response) {
-    try {
-        if (request.url.endsWith('/') && request.url.length > 1) {
-            response.writeHead(302, {
-                'Location': '../' + request.url.slice(0, -1).substring(request.url.indexOf('/') + 1)
-            })
-            response.end();
-            return;
-        }
-        if (request.method === 'GET') {
-            sendRequestedPage('frontend/' + request.url.substring(request.url.indexOf('/') + 1), response);
-        } else if (request.method === 'POST') {
-            handleWebhook(request.url.substring(request.url.indexOf('/') + 1), request, response);
-        } else {
-            response.writeHead(405);
-            response.end('Unsupported method.')
-        }
-    } catch (error) {
-        response.writeHead(500);
-        fs.createReadStream('frontend/500.html').pipe(response);
-        console.log(error);
-    }
-}
-
-function handleWebhook(requestPath, request, response) {
-    try {
-        if (requestPath.startsWith('api/update-docs')) {
-            let data = '';
-            request.on('data', chunk => {
-                data += chunk;
-            })
-            request.on('end', () => {
-                try {
-                    const DATA = JSON.parse(data);
-
-                    let repository = DATA.repository.svn_url;
-                    let name = '';
-
-                    // Validate repository
-                    let isValid = false;
-                    for (let i = 0; i < PROJECTS.length; i++) {
-                        let project = PROJECTS[i];
-                        if (project.repository === repository && project.documentation === true) {
-                            name = project.name;
-                            isValid = true;
-                            break;
-                        }
-                    }
-                    if (isValid === false) {
-                        response.writeHead('400');
-                        response.end('Invalid repository');
-                        return;
-                    }
-
-                    // Update repository
-                    fetchPlugin(repository, name);
-
-                    response.writeHead('200');
-                    response.end('Updated documentation');
-                } catch (error) {
-                    response.writeHead('500');
-                    response.end('Error parsing data body');
-                }
-            })
-        } else {
-            response.writeHead('404');
-            response.end('Not found')
-        }
-    } catch (error) {
-        response.writeHead('500');
-        response.end('Unknown server error');
-        console.error(error);
-    }
-}
-
-function sendRequestedPage(targetResourcePath, response) {
-    for (let i = 0; i < CHECK_DOCUMENT_ENDS.length; i++) {
-        let pathToCheck = targetResourcePath + CHECK_DOCUMENT_ENDS[i];
-        if (fs.existsSync(pathToCheck) || pathToCheck.startsWith("frontend/transcript")) {
-            if (!pathToCheck.startsWith("frontend/transcript")) {
-                if (fs.statSync(pathToCheck).isDirectory()) {
-                    sendRequestedPage(pathToCheck + '/index.html', response);
-                    return;
-                }
+// Format a template with a map of paired keys and values
+const formatTemplate = (template, map) => {
+    let formatted = template;
+    for (const key in map) {
+        if (map.hasOwnProperty(key)) {
+            let occurrences = (formatted.match(new RegExp(`{{\\s*${key}\\s*}}`, 'g')) || []).length;
+            for (let i = 0; i < occurrences; i++) {
+                formatted = formatted.replace(`{{${key}}}`, map[key]);
             }
-            sendPage(response, fs, pathToCheck);
-            return;
         }
     }
-
-    response.writeHead(404);
-    fs.createReadStream('frontend/404.html').pipe(response);
+    return formatted;
 }
 
-function sendPage(response, fs, targetPath) {
-    if (targetPath.startsWith('frontend/download')) {
-        response.writeHead(200, {
-            'content-type': 'application/octet-stream',
-            'content-length': fs.statSync(targetPath).size
-        });
-        fs.createReadStream(targetPath).pipe(response);
-        return;
-    }
 
-    // Render MarkDown to html file
-    if (targetPath.endsWith('.md')) {
-        let sideBarMarkDown = '';
-        let contentMarkDown = md.render(fs.readFileSync(targetPath).toString());
-        let template = BLANK_PAGE_TEMPLATE;
-
-        if (targetPath.startsWith('frontend/docs')) {
-            const SIDEBAR_PATH = targetPath.replace(targetPath.substring(targetPath.lastIndexOf('/') + 1), '_Sidebar.md');
-            if (fs.existsSync(SIDEBAR_PATH)) {
-                sideBarMarkDown = md.render(fs.readFileSync(SIDEBAR_PATH).toString());
-            }
-            template = DOCS_PAGE_TEMPLATE;
-        }
-
-        let pageTitle = targetPath.substring(targetPath.lastIndexOf('/') + 1)
-            .replace('-', ' ')
-            .replace('.md', '');
-
-        // Capitalize first letter
-        pageTitle = pageTitle.charAt(0).toUpperCase() + pageTitle.slice(1);
-
-
-        response.writeHead(200);
-        response.end(template.replace('{PAGE_SIDEBAR_CONTENT}', sideBarMarkDown)
-            .replace('{PAGE_CONTENT}', contentMarkDown)
-            .replace('{PROJECT_TITLE}', targetPath.split('/')[2])
-            .replace('{PAGE_TITLE}', pageTitle)
-            .replace('{PAGE_TITLE}', pageTitle));
-        return;
-    }
-
-    // Send scalable vector graphic
-    if (targetPath.endsWith('.svg')) {
-        response.writeHead(200, {
-            'Content-Type': 'image/svg+xml'
-        });
-        fs.createReadStream(targetPath).pipe(response)
-        return;
-    }
-
-    if (targetPath.startsWith('frontend/transcript')) {
-        try {
-            let ticketFormat = fs.readFileSync("frontend/ticket.html", "utf8");
-            let targetUrl = targetPath.split("?")[1];
-            let formattedUrl = new URL(targetUrl);
-            if (formattedUrl.hostname !== "cdn.discordapp.com") {
-                response.writeHead(404);
-                fs.createReadStream('frontend/404.html').pipe(response);
-                return;
-            }
-
-            if (cachedTicketFiles.has(targetUrl)) {
-                if (cachedTicketFiles.get(targetUrl).expiry > new Date()) {
-                    cachedTicketFiles.delete(targetUrl);
-                } else {
-                    response.writeHead(200);
-                    response.end(cachedTicketFiles.get(targetUrl).page);
-                    return;
-                }
-            }
-
-            fetch(targetUrl).then(response => {
-                if (response.status !== 200) {
-                    throw response.status;
-                }
-                if (!response.headers.get("Content-Disposition").endsWith(".html, attachment")) {
-                    console.log("Attempted to parse an invalid html file " + response.headers.get("Content-Disposition"));
-                    throw 400;
-                }
-                return response.text();
-            }).then(responseText => {
-                let responseHtml = responseText.replace("<html>", "")
-                    .replace("</html>", "")
-                    .replace("<!DOCTYPE html>", "");
-                ticketFormat = ticketFormat.replace("{{TRANSCRIPT_CONTENT}}", responseHtml);
-                cachedTicketFiles.set(targetUrl, {
-                    "page": ticketFormat,
-                    "expiry": new Date().getHours() + 3
-                });
-                response.writeHead(200);
-                response.end(ticketFormat);
-            }).catch(error => {
-                handleTicketFetchError(error, response);
-            })
-        } catch (error) {
-            handleTicketFetchError(error, response);
-        }
-        return;
-    }
-
-    // Send other file
-    response.writeHead(200);
-    fs.createReadStream(targetPath).pipe(response)
-}
-
-// Start server
-const server = http.createServer(requestListener);
-server.listen(PORT, HOST, () => {
-    console.log(`Server is running on ${HOST}:${PORT}`);
-    console.log('[Pterodactyl] Ready');
+// Update all project documentation
+console.log('Updating project documentation...');
+projects.filter(project => project.documentation).forEach(project => {
+    updateDocs(project.repository, project.name);
 });
 
-function handleTicketFetchError(error, response) {
-    if (typeof error === "number") {
-        switch (parseInt(error)) {
-            case 403:
-                response.writeHead(429);
-                fs.createReadStream('frontend/429.html').pipe(response);
-                return;
-            case 400:
-                response.writeHead(400);
-                fs.createReadStream('frontend/400.html').pipe(response);
-                return;
-        }
-    } else {
-        console.log("Unexpected error: " + error);
-    }
-    response.writeHead(404);
-    fs.createReadStream('frontend/404.html').pipe(response);
-}
+// Serve the web application
+app.listen(port, host, () => {
+    console.log(`Server running at on ${host}:${port}`);
+    console.log('[Pterodactyl] Ready');
+});
