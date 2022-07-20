@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 
     <!-- Site title and description -->
-    <title>William278 - 429</title>
-    <meta name="description" content="William278's plugins, projects & documentation."/>
+    <title>William278 - {{PAGE_TITLE}}</title>
+    <meta name="description" content="William278.net - {PAGE_TITLE}"/>
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/prism.css">
 
     <!-- Google fonts (for Nunito font) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito">
@@ -22,8 +23,8 @@
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script>
         $(function () {
-            $("header").load("/navbar.html");
-            $("footer").load("/footer.html");
+            $("header").load("./navbar.html");
+            $("footer").load("./footer.html");
         });
     </script>
 
@@ -33,11 +34,8 @@
 <body>
 <header></header>
 <main>
-    <div id="one-column-page-text" class="error-page-text">
-        <h1>Error 429</h1>
-        <p>You're sending requests too quickly. Please wait before trying again!<br/>
-            <a href="javascript:window.location.href=window.location.href"><i
-                    class="fa-solid fa-arrow-rotate-right"></i> Click to try again</a></p>
+    <div id="one-column-page-text">
+        {{PAGE_CONTENT}}
     </div>
 </main>
 <footer></footer>

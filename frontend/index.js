@@ -10,40 +10,48 @@ const PROJECT_BOX_FORMAT = '<div class="main-page-product">\n' +
     '                </div>'
 
 const GITHUB_BUTTON_FORMAT = '<a href="{URL_LINK}" target="_blank" class="main-page-product-button fa-brands fa-github"></a>\n';
-const SPIGOT_BUTTON_FORMAT = '<a href="{URL_LINK}" target="_blank" class="main-page-product-button fa-solid fa-faucet"></a>\n';
-const POLYMART_BUTTON_FORMAT = '<a href="{URL_LINK}" target="_blank" class="main-page-product-button fa-solid fa-p"></a>\n';
-const SONGODA_BUTTON_FORMAT = '<a href="{URL_LINK}" target="_blank" class="main-page-product-button fa-solid fa-shield-halved"></a>\n';
+const SPIGOT_BUTTON_FORMAT = '<a href="https://www.spigotmc.org/resources/{ID}" target="_blank" class="main-page-product-button fa-solid fa-faucet"></a>\n';
+const POLYMART_BUTTON_FORMAT = '<a href="https://polymart.org/resource/{ID}" target="_blank" class="main-page-product-button fa-solid fa-p"></a>\n';
+const SONGODA_BUTTON_FORMAT = '<a href="https://songoda.com/marketplace/product/{ID}" target="_blank" class="main-page-product-button fa-solid fa-shield-halved"></a>\n';
 const DOCS_BUTTON_FORMAT = '<a href="{URL_LINK}" class="main-page-product-button main-page-product-docs button-link">Docs</a>\n';
 
 
 window.onload = () => {
-    let projects = ''
-    PROJECTS.forEach((project) => {
+    fetch('/api/projects').then(projects => {
+        return projects.text();
+    }).then(projects => {
+        return JSON.parse(projects);
+    }).then(projects => {
+        let projectList = '';
+        projects.forEach((project) => {
+            projectList += PROJECT_BOX_FORMAT
+                .replace('{PROJECT_NAME}', project.name)
+                .replace('{PROJECT_DESC}', project.tagline)
+                .replace('{PROJECT_ICON}', project.icon)
+                .replace('{PROJECT_BUTTONS}', getProjectButtons(project))
+        });
+        return projectList;
+    }).then(projectList => {
+        document.getElementById('main-page-product-grid').innerHTML = projectList;
+    }).catch(err => {
+        console.log(err);
+    })
 
-
-        projects += PROJECT_BOX_FORMAT
-            .replace('{PROJECT_NAME}', project.name)
-            .replace('{PROJECT_DESC}', project.tagline)
-            .replace('{PROJECT_ICON}', project.icon)
-            .replace('{PROJECT_BUTTONS}', getProjectButtons(project))
-    });
-
-    document.getElementById('main-page-product-grid').innerHTML = projects;
 }
 
-function getProjectButtons(project) {
+const getProjectButtons = (project) => {
     let projectButtons = '';
     if (project.repository !== undefined && project.repository !== '') {
         projectButtons += GITHUB_BUTTON_FORMAT.replace('{URL_LINK}', project.repository)
     }
-    if (project.download.spigot !== undefined && project.download.spigot !== '') {
-        projectButtons += SPIGOT_BUTTON_FORMAT.replace('{URL_LINK}', project.download.spigot)
+    if (project.ids.spigot !== undefined && project.ids.spigot !== '') {
+        projectButtons += SPIGOT_BUTTON_FORMAT.replace('{ID}', project.ids.spigot)
     }
-    if (project.download.polymart !== undefined && project.download.polymart !== '') {
-        projectButtons += POLYMART_BUTTON_FORMAT.replace('{URL_LINK}', project.download.polymart)
+    if (project.ids.polymart !== undefined && project.ids.polymart !== '') {
+        projectButtons += POLYMART_BUTTON_FORMAT.replace('{ID}', project.ids.polymart)
     }
-    if (project.download.songoda !== undefined && project.download.songoda !== '') {
-        projectButtons += SONGODA_BUTTON_FORMAT.replace('{URL_LINK}', project.download.songoda)
+    if (project.ids.songoda !== undefined && project.ids.songoda !== '') {
+        projectButtons += SONGODA_BUTTON_FORMAT.replace('{ID}', project.ids.songoda)
     }
     if (project.documentation !== undefined && project.documentation === true) {
         projectButtons += DOCS_BUTTON_FORMAT.replace('{URL_LINK}', '/docs/' + project.name.toLowerCase() + '/Home')

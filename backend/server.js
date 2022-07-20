@@ -23,7 +23,7 @@ const appRoot = require('app-root-path');
 const {PROJECTS} = require(`${appRoot}/frontend/projects`);
 
 const DOCS_PAGE_TEMPLATE = fs.readFileSync('frontend/docs/docs.html').toString();
-const BLANK_PAGE_TEMPLATE = fs.readFileSync('frontend/blank.html').toString();
+const BLANK_PAGE_TEMPLATE = fs.readFileSync('frontend/readme.html').toString();
 const CHECK_DOCUMENT_ENDS = ['', '.html', '.md']
 
 const HOST = process.env.HOST || 'localhost';

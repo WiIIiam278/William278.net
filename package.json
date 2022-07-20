@@ -11,14 +11,17 @@
   "license": "ISC",
   "dependencies": {
     "app-root-path": "^3.0.0",
+    "express": "^4.18.1",
     "git-clone-or-pull": "^4.0.0",
     "git-pull-or-clone": "^2.0.2",
     "markdown-it": "^12.3.2",
+    "markdown-it-anchor": "^8.6.4",
     "markdown-it-prism": "^2.2.3",
     "markdown-it-wikilinks": "^1.2.0",
     "node-fetch": "^3.2.4",
     "sanitize-filename": "^1.6.3",
     "shelljs": "^0.8.5",
+    "spiget": "^0.1.3",
     "viewerjs": "^1.10.5"
   }
 }

@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 
     <!-- Site title and description -->
-    <title>William278 - 400</title>
-    <meta name="description" content="William278's plugins, projects & documentation."/>
+    <title>William278 - Docs - {{PROJECT_TITLE}} - {{PAGE_TITLE}}</title>
+    <meta name="description" content="Documentation for William278's projects."/>
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/prism.css">
 
     <!-- Google fonts (for Nunito font) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito">
@@ -18,12 +19,16 @@
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/svg" href="/images/icons/huskhelp.svg"/>
 
+    <!-- Docs page script -->
+    <script src="/projects.js"></script>
+    <script src="/docs/docs.js"></script>
+
     <!-- Loads the header and footer -->
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script>
         $(function () {
-            $("header").load("/navbar.html");
-            $("footer").load("/footer.html");
+            $("header").load("../../navbar.html");
+            $("footer").load("../../footer.html");
         });
     </script>
 
@@ -33,9 +38,15 @@
 <body>
 <header></header>
 <main>
-    <div id="one-column-page-text" class="error-page-text">
-        <h1>Error 400</h1>
-        <p>Your client sent a bad request. <a href="/">Back to home&hellip;</a></p>
+    <div id="docs-page-two-column">
+        <div id="docs-page-left-column">
+            <a id="docs-page-back-link" href="../../frontend">&#8592;&nbsp;Products</a>
+            <div id="docs-page-sidebar-content">{{PAGE_SIDEBAR_CONTENT}}</div>
+        </div>
+        <div id="docs-page-right-column">
+            <h1 id="docs-page-title">{{PAGE_TITLE}}</h1>
+            <div id="docs-page-content">{{PAGE_CONTENT}}</div>
+        </div>
     </div>
 </main>
 <footer></footer>
