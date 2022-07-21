@@ -96,7 +96,7 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
         res.redirect(`/docs/${name}/Home`);
         return;
     }
-    let page = req.params.page.toLowerCase();
+    let page = req.params.page;
 
     // Find project with documentation by name
     let project = projects.find(project => project.name.toLowerCase() === name);
@@ -117,12 +117,11 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
             res.send(formatTemplate(docs, {
                 'PAGE_CONTENT': markdown.render(fs.readFileSync(pagePath, 'utf8')),
                 'SIDEBAR_CONTENT': markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
-                'PAGE_TITLE': req.params.page.replace(/-/g, ' '),
+                'PAGE_TITLE': page.replace(/-/g, ' '),
                 'PROJECT_NAME': project.name,
             }));
         }
     } else {
-        console.log(`Page ${pagePath} not found.`);
         sendError(res, '404', 'Documentation page not found.');
     }
 });
