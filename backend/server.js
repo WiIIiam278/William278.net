@@ -4,6 +4,7 @@ const fs = require('fs');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const git = require('git-clone-or-pull');
 const sitemap = require('express-sitemap');
+const rate = require('express-rate-limit')
 
 // Spiget fetching
 const {Spiget} = require('spiget');
@@ -12,17 +13,14 @@ const spiget = new Spiget("William278UpdateApi");
 // GitHub flavoured Markdown parsing
 const MarkdownIt = require('markdown-it');
 const markdown = new MarkdownIt({
-    html: true,
-    xhtmlOut: true,
-    breaks: true
+    html: true, xhtmlOut: true, breaks: true
 }).use(require('markdown-it-wikilinks')({
     postProcessPageName: (pageName) => {
         pageName = pageName.trim()
         pageName = pageName.split('/').map(require('sanitize-filename')).join('/')
         pageName = pageName.replace(/\s+/, '-')
         return pageName
-    },
-    uriSuffix: ''
+    }, uriSuffix: ''
 })).use(require('markdown-it-anchor'))
     .use(require('markdown-it-prism'), {
         defaultLanguage: 'yml'
@@ -34,6 +32,12 @@ const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8000;
 const frontend = path.join(__dirname, '../frontend');
 const projects = JSON.parse(fs.readFileSync(path.join(__dirname, 'projects.json'), 'utf8'));
+const limiter = rate({
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    max: 500, // Limit each IP to 1000 requests per `window` (here, per 15 minutes)
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
 
 // Special page templates
 const ticket = fs.readFileSync(path.join(__dirname, 'template/ticket.html'), 'utf8');
@@ -167,9 +171,7 @@ app.get('/api/projects/:name/version', (req, res) => {
         if (id) {
             spiget.getLatestResourceVersion(id).then(resource => {
                 res.send({
-                    name: project.name,
-                    version: resource.name,
-                    date: resource.releaseDate
+                    name: project.name, version: resource.name, date: resource.releaseDate
                 });
             });
         } else {
@@ -182,6 +184,7 @@ app.get('/api/projects/:name/version', (req, res) => {
 
 // Prepare the sitemap and server settings
 app.use(express.static(frontend));
+app.use(['/api/projects', '/api/projects/:name', '/api/projects/:name/version', '/api/update-docs'], limiter);
 let map = sitemap({generate: app});
 
 // Handle sitemap requests
@@ -234,10 +237,10 @@ app.get('*', (req, res) => {
 });
 
 
+// Display an error page
 const sendError = (res, code, message) => {
     res.send(formatTemplate(error, {
-        'ERROR_CODE': code,
-        'ERROR_DESCRIPTION': message ? message : 'Make sure you entered the correct URL.'
+        'ERROR_CODE': code, 'ERROR_DESCRIPTION': message ? message : 'Make sure you entered the correct URL.'
     }));
 }
 
@@ -277,6 +280,7 @@ console.log('Updating project documentation...');
 projects.filter(project => project.documentation).forEach(project => {
     updateDocs(project.repository, project.name);
 });
+
 
 // Serve the web application
 app.listen(port, host, () => {
