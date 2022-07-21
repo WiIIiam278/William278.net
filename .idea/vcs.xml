@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/frontend/docs/huskhomes2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/frontend/docs/uskhomes" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/frontend/projects/huskchat" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/frontend/projects/huskhomes" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/frontend/projects/husktowns" vcs="Git" />
@@ -10,6 +11,5 @@
     <mapping directory="$PROJECT_DIR$/frontend/docs/huskhomes" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/frontend/docs/husksync" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/frontend/docs/husktowns" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/frontend/docs/uskhomes" vcs="Git" />
   </component>
 </project>

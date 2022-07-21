@@ -122,6 +122,7 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
             }));
         }
     } else {
+        console.log(`Page ${pagePath} not found.`);
         sendError(res, '404', 'Documentation page not found.');
     }
 });

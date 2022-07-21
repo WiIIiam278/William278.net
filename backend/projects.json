@@ -52,7 +52,7 @@
       "spigot": "100657",
       "polymart": "2125"
     },
-    "tagline": "Plugin that provides a web server interface for uploading WorldEdit schematics",
+    "tagline": "Provide users with a simple web interface for uploading schematics",
     "documentation": false,
     "icon": "schematicupload.svg"
   },
