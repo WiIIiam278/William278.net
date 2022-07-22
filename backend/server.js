@@ -228,7 +228,8 @@ app.get('*', (req, res) => {
         if (fullUrl.endsWith('.md') || urlModifiers === '.md') {
             res.send(formatTemplate(readme, {
                 'PAGE_CONTENT': markdown.render(fs.readFileSync(path
-                    .join(frontend, req.url + urlModifiers), 'utf8'))
+                    .join(frontend, req.url + urlModifiers), 'utf8')),
+                'PAGE_TITLE': req.url.replace(/-/g, ' ').substring(1, req.url.length),
             }));
         } else {
             res.sendFile(req.url + urlModifiers, {root: frontend});
