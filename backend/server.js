@@ -45,6 +45,9 @@ const readme = fs.readFileSync(path.join(__dirname, 'template/readme.html'), 'ut
 const docs = fs.readFileSync(path.join(__dirname, 'template/docs.html'), 'utf8');
 const error = fs.readFileSync(path.join(__dirname, 'template/error.html'), 'utf8');
 
+// Search caching
+let searchCache = {};
+
 // Handle transcripts
 app.get('/transcript', (req, res) => {
     if (!req.url.endsWith('.html')) {
@@ -147,8 +150,110 @@ app.post('/api/update-docs', (req, res) => {
             updateDocs(repository, name);
             res.status(200).send('OK');
         }
+
+        // Clear the search cache
+        searchCache = {};
     }
     res.status(400).send('Bad request');
+});
+
+
+// Search for matches of the query in the read page string
+const searchPage = (query, markdown) => {
+    let matches = [];
+    let regex = new RegExp(query, 'gi');
+    let match = regex.exec(markdown);
+    while (match) {
+        matches.push(match.index);
+        match = regex.exec(markdown);
+    }
+    return matches;
+}
+
+
+// Serves a list of search results for a query term
+app.get(['/api/search-docs/(:name)?', '/api/search-docs'], (req, res) => {
+    const query = req.query.query;
+    if (!query) {
+        res.status(400).send('Bad request');
+        return;
+    }
+    let projectsToSearch = [];
+    const queryName = req.params.name;
+    if (queryName) {
+        const project = projects.find(project => project.name.toLowerCase() === queryName.toLowerCase());
+        if (!project) {
+            res.status(400).send('Project ' + queryName + ' not found');
+            return;
+        }
+        if (!project.documentation) {
+            res.status(400).send('No documentation found.');
+            return;
+        }
+        projectsToSearch.push(project);
+    } else {
+        projectsToSearch = projects.filter(project => project.documentation);
+    }
+    if (projectsToSearch.length === 0) {
+        res.status(400).send('No documentation found.');
+        return;
+    }
+
+    // If the query is in the cache, return the cached results
+    if (searchCache[query.toLowerCase()]) {
+        // ...But only if the query was for the same projectsToSearch
+        if (searchCache[query.toLowerCase()].projects.length === projectsToSearch.length) {
+            let sameProjects = true;
+            for (let i = 0; i < projectsToSearch.length; i++) {
+                if (searchCache[query.toLowerCase()].projects[i].name !== projectsToSearch[i].name) {
+                    sameProjects = false;
+                    break;
+                }
+            }
+            if (sameProjects) {
+                res.status(200).send(searchCache[query.toLowerCase()].results);
+                return;
+            }
+        }
+    }
+
+    const results = [];
+    for (let project of projectsToSearch) {
+        // List page names that end with .md from the frontend
+        const pages = fs.readdirSync(path.join(frontend, `docs/${project.name.toLowerCase()}`));
+        for (const page of pages) {
+            if (page.endsWith('.md')) {
+                // Search against the page name and content
+                let pageName = page.slice(0, -3);
+                let nameMatches = searchPage(query, pageName);
+                let contentMatches = searchPage(query, fs.readFileSync(path.join(frontend, `docs/${project.name.toLowerCase()}/${page}`), 'utf8'));
+
+                // Ignore meta pages (_Sidebar, _Footer & Home)
+                if (pageName.startsWith('_') || pageName === 'Home') {
+                    continue;
+                }
+
+                // Add the page to the results if it contains the query
+                if (nameMatches.length + contentMatches.length > 0) {
+                    results.push({
+                        'project': project.name,
+                        'name': pageName.replace(/-/g, ' '),
+                        'url': `/docs/${project.name.toLowerCase()}/${pageName}`,
+                        'name_matches': nameMatches.length,
+                        'content_matches': contentMatches.length,
+                    });
+                }
+            }
+        }
+    }
+
+    // Cache the result for this query
+    searchCache[query.toLowerCase()] = {
+        'projects': projectsToSearch,
+        'results': results,
+    };
+
+    res.send(results);
 });
 
 

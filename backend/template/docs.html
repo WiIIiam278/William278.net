@@ -39,12 +39,16 @@
 <main>
     <div id="docs-page-two-column">
         <div id="docs-page-left-column">
+            <label for="docs-search"><i class="fa-solid fa-magnifying-glass" id="docs-search-icon"></i></label>
+            <input id="docs-search" type="text" placeholder="Search"/>
+            <div id="docs-search-results"></div>
             <div id="docs-page-sidebar-content">{{SIDEBAR_CONTENT}}</div>
         </div>
         <div id="docs-page-right-column">
             <div id="docs-breadcrumbs"><a href="/docs/">Docs</a> <span class="docs-breadcrumb-divider">/</span>
                 <a href="/docs/{{PROJECT_NAME}}">{{PROJECT_NAME}}</a> <span class="docs-breadcrumb-divider">/</span>
-                <a href="#" class="docs-home-hidden">{{PAGE_TITLE}}</a> <span class="docs-breadcrumb-divider docs-home-hidden">/</span>
+                <a href="#" class="docs-home-hidden">{{PAGE_TITLE}}</a> <span
+                        class="docs-breadcrumb-divider docs-home-hidden">/</span>
             </div>
             <h1 id="docs-page-title">{{PAGE_TITLE}}</h1>
             <div id="docs-page-content">{{PAGE_CONTENT}}</div>

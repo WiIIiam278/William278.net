@@ -39,8 +39,11 @@
 <main>
     <div id="docs-page-two-column">
         <div id="docs-page-left-column">
-            <h2>Projects</h2>
+            <label for="docs-search"><i class="fa-solid fa-magnifying-glass" id="docs-search-icon"></i></label>
+            <input id="docs-search" type="text" placeholder="Search"/>
+            <div id="docs-search-results"></div>
             <div id="docs-page-sidebar-content">
+                <h2>Projects</h2>
                 <ul class="docs-page-product-list"></ul>
             </div>
         </div>
@@ -48,7 +51,7 @@
             <div id="docs-breadcrumbs"><a href="/docs/">Docs</a><span class="docs-breadcrumb-divider">/</span>
             </div>
             <div id="docs-page-content">
-                <h1>Docs</h1>
+                <h1 id="docs-page-title">Docs</h1>
                 <p>You can find documentation for my various projects and products here. Please click through to each
                     product wiki to find the information you need.</p>
                 <div>

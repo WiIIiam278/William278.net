@@ -324,12 +324,50 @@ code {
     margin-top: 1em;
 }
 
+/* Docs project icons */
+.docs-project-icon {
+    display: inline;
+    margin-right: 0.35em;
+    width: 1.1em;
+    height: 1.1em;
+}
+
+/* Docs page search box */
+#docs-search {
+    font-family: Nunito, sans-serif;
+    font-size: 1em;
+    border-radius: 0.5em;
+    color: var(--main-white);
+    background-color: transparent;
+    border: 0.15em solid var(--main-light-gray);
+    margin-left: 0.2em;
+    padding: 0.3em;
+    width: 80%;
+}
+
+#docs-search-icon {
+    color: var(--main-light-gray);
+}
+
+#docs-search-results {
+    margin-top: 1em;
+}
+
+.docs-search-result {
+    margin: 0.1em 0.5em;
+}
+
 #docs-page-right-column {
     flex: 1;
     max-width: 1000px;
     min-width: 200px;
     margin-left: 2em;
     margin-right: 1em;
+}
+
+/* Docs page title */
+#docs-page-title {
+    margin-top: 0.3em;
 }
 
 /* Docs breadcrumbs */
@@ -339,7 +377,7 @@ code {
     justify-content: flex-start;
     align-items: center;
     border-radius: 0.5em;
-    margin: 1em 0;
+    margin: 1em 0 0 0;
 }
 
 #docs-breadcrumbs .docs-breadcrumb-divider {
