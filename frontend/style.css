@@ -332,6 +332,22 @@ code {
     margin-right: 1em;
 }
 
+/* Docs breadcrumbs */
+#docs-breadcrumbs {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 0.5em;
+    margin: 1em 0;
+}
+
+#docs-breadcrumbs .docs-breadcrumb-divider {
+    color: var(--main-light-gray);
+    margin: 0 0.4em;
+}
+
+
 @media screen and (max-width: 750px) {
     #docs-page-two-column {
         -webkit-flex-flow: column-reverse wrap;

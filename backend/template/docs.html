@@ -39,10 +39,13 @@
 <main>
     <div id="docs-page-two-column">
         <div id="docs-page-left-column">
-            <a id="docs-page-back-link" href="/docs/">&#8592;&nbsp;Projects</a>
             <div id="docs-page-sidebar-content">{{SIDEBAR_CONTENT}}</div>
         </div>
         <div id="docs-page-right-column">
+            <div id="docs-breadcrumbs"><a href="/docs/">Docs</a> <span class="docs-breadcrumb-divider">/</span>
+                <a href="/docs/{{PROJECT_NAME}}">{{PROJECT_NAME}}</a> <span class="docs-breadcrumb-divider">/</span>
+                <a href="#" class="docs-home-hidden">{{PAGE_TITLE}}</a> <span class="docs-breadcrumb-divider docs-home-hidden">/</span>
+            </div>
             <h1 id="docs-page-title">{{PAGE_TITLE}}</h1>
             <div id="docs-page-content">{{PAGE_CONTENT}}</div>
         </div>

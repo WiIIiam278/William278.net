@@ -1,4 +1,12 @@
 window.onload = () => {
+    // If the page url ends with /Home/ hide all elements with class docs-home-hidden
+    if (window.location.pathname.endsWith('/Home')) {
+        document.querySelectorAll('.docs-home-hidden').forEach(element => {
+            element.style.display = 'none';
+        });
+    }
+
+    // Display projects on sidebar
     fetch('/api/projects').then(projects => {
         return projects.text();
     }).then(projects => {

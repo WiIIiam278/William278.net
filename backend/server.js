@@ -94,6 +94,12 @@ app.get('/transcript', (req, res) => {
 
 // Serve documentation pages
 app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
+    // If the request ends with a forward slash, redirect to the same page without the forward slash
+    if (req.url.endsWith('/')) {
+        res.redirect(req.url.slice(0, -1));
+        return;
+    }
+
     // Serve page with markdown
     let name = req.params.name.toLowerCase();
     if (!req.params.page) {
@@ -202,6 +208,12 @@ app.get('/robots.txt', (req, res) => {
 app.get('*', (req, res) => {
     let fullUrl = path.join(frontend, req.url);
     let urlModifiers = '';
+
+    // If the request ends with a forward slash, redirect to the same page without the forward slash
+    if (req.url.endsWith('/')) {
+        res.redirect(req.url.slice(0, -1));
+        return;
+    }
 
     // If the file doesn't exist, serve the 404 page
     if (!fs.existsSync(fullUrl)) {
