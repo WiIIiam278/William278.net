@@ -46,9 +46,14 @@ window.onload = () => {
         // When the docs-search input is changed
         document.getElementById('docs-search').oninput = () => {
             // Hide docs-page-sidebar-content when the box has elements in it
-            if (document.getElementById('docs-search').value.length > 0) {
+            let searchQuery = document.getElementById('docs-search').value;
+            let queryLength = searchQuery.length;
+            if (queryLength > 0) {
                 document.getElementById('sidebar-content').style.display = 'none';
                 document.getElementById('docs-search-results').style.display = 'block';
+                if (queryLength > 32) {
+                    document.getElementById('docs-search').value = searchQuery.substring(0, 32);
+                }
             } else {
                 document.getElementById('sidebar-content').style.display = 'block';
                 document.getElementById('docs-search-results').style.display = 'none';
@@ -56,7 +61,7 @@ window.onload = () => {
             }
 
             // Dont request queries that only contain punctuation or spaces
-            if (document.getElementById('docs-search').value.match(/^[\s.,;:!?()]+$/)) {
+            if (searchQuery.match(/^[\s.,;:!?()]+$/)) {
                 document.getElementById('docs-search-results').innerHTML = '';
                 return;
             }
@@ -100,6 +105,14 @@ window.onload = () => {
                 return results;
             }).then(results => {
                 document.getElementById('docs-search-results').innerHTML = '';
+
+                // If the list is empty, display a message
+                if (results.length === 0) {
+                    document.getElementById('docs-search-results').innerHTML = '<p>No results found</p>';
+                    return;
+                }
+
+                // Display results
                 results.forEach((result) => {
                     // Find matching project from fetched projects
                     let project = fetchedProjects.find(project => project.name.toLowerCase() === result.project.toLowerCase());

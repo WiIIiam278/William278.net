@@ -180,6 +180,12 @@ app.get(['/api/search-docs/(:name)?', '/api/search-docs'], (req, res) => {
         res.status(400).send('Bad request');
         return;
     }
+    // Limit query size to 32
+    if (query.length > 32) {
+        res.status(400).send('Query too long');
+        return;
+    }
+
     let projectsToSearch = [];
     const queryName = req.params.name;
     if (queryName) {
@@ -328,7 +334,7 @@ app.get('*', (req, res) => {
             sendError(res, '404');
             return;
         } else {
-            urlModifiers = '.md';
+            urlModifiers = 'dr.md';
         }
     }
 
