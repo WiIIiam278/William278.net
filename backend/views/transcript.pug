@@ -1,0 +1,23 @@
+//- Template for support ticket transcripts
+extends sidebar-page
+
+append title
+    |  - Ticket Transcript
+append styles
+    link(rel='stylesheet' href='/prism.css')
+append scripts
+    script(src='/ticket.js')
+
+block sidebar-content
+    a(id='sidebar-back-link' href='/')
+        i(class='fa-solid fa-arrow-left')
+        span &nbsp;
+        | Home
+    div(id='sidebar-content')
+        h2 Ticket overview
+        div(id="transcript-metadata")
+
+block main-content
+    div(id='page-with-sidebar-main-content')
+        h1 Transcript
+        | !{transcript}

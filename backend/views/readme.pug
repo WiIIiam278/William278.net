@@ -1,0 +1,9 @@
+//- Template for a readme page populated with markdown content
+extends template
+
+append title
+    |  - #{name}
+
+block content
+    div(id="one-column-page-text")
+        | !{markdown}

@@ -3,9 +3,9 @@ let isRootPage = false;
 let thisProject;
 
 window.onload = () => {
-    // If the page url ends with /Home/ hide all elements with class docs-home-hidden
+    // If the page url ends with /Home/ hide all elements with class docs-index.pug-hidden
     if (window.location.pathname.endsWith('/Home')) {
-        document.querySelectorAll('.docs-home-hidden').forEach(element => {
+        document.querySelectorAll('.docs-index.pug-hidden').forEach(element => {
             element.style.display = 'none';
         });
     } else if (window.location.pathname.endsWith('/docs')) {
@@ -47,10 +47,10 @@ window.onload = () => {
         document.getElementById('docs-search').oninput = () => {
             // Hide docs-page-sidebar-content when the box has elements in it
             if (document.getElementById('docs-search').value.length > 0) {
-                document.getElementById('docs-page-sidebar-content').style.display = 'none';
+                document.getElementById('sidebar-content').style.display = 'none';
                 document.getElementById('docs-search-results').style.display = 'block';
             } else {
-                document.getElementById('docs-page-sidebar-content').style.display = 'block';
+                document.getElementById('sidebar-content').style.display = 'block';
                 document.getElementById('docs-search-results').style.display = 'none';
                 return;
             }

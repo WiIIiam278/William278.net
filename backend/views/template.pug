@@ -1,0 +1,65 @@
+//- Master page template
+doctype html
+html(lang='en')
+    head
+        title
+            block title
+                | William278
+        meta(name='description', content='Open source Minecraft server software & game projects by William278.')
+
+        block styles
+            link(rel='stylesheet', href='/style.css')
+            link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Nunito:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic')
+
+        block meta
+            //- Charset and viewport
+            meta(charset='UTF-8')
+            meta(name='viewport', content='width=device-width, initial-scale=1')
+
+            //- Favicons
+            link(rel='apple-touch-icon', sizes='180x180', href='/images/icons/favicons/apple-touch-icon.png')
+            link(rel='icon', type='image/png', sizes='32x32', href='/images/icons/favicons/favicon-32x32.png')
+            link(rel='icon', type='image/png', sizes='16x16', href='/images/icons/favicons/favicon-16x16.png')
+            link(rel='manifest', href='/site.webmanifest')
+            link(rel='mask-icon', href='/images/icons/favicons/safari-pinned-tab.svg', color='#142b42')
+            link(rel='shortcut icon', href='/images/icons/favicons/favicon.ico')
+
+            //- Platform icon configuration
+            meta(name='msapplication-TileColor', content='#142b42')
+            meta(name='msapplication-config', content='/browserconfig.xml')
+            meta(name='theme-color', content='#142b42')
+
+        block scripts
+            script(src='//code.jquery.com/jquery-1.10.2.js')
+            script(src='https://kit.fontawesome.com/aa4c023dda.js', crossorigin='anonymous')
+
+    body
+        header
+            div(id='navbar')
+                h1(id='navbar-logo')
+                    a(href='/') William278
+                span(id='navbar-space')
+                ul(id='navbar-links')
+                    li(class='navbar-link')
+                        a(href='/') Home
+                    li(class='navbar-link')
+                        a(href='/docs') Docs
+                    li(class='navbar-link')
+                        a(href='https://discord.gg/tVYhJfyDWG' target='_blank' class='button-link') Support
+
+        main
+            block content
+
+        footer
+            div(id='footer')
+                p
+                    span &copy; William278, 2022
+                    br
+                    span
+                        a(href='/terms' class='footer-link') Support Terms
+                        span(class='footer-link-divider') &#xFF0D;
+                        a(href='href="https://buymeacoff.ee/william278"' class='footer-link') Tips
+                        span(class='footer-link-divider') &#xFF0D;
+                        a(href='href="https://twitter.com/William27528"' class='footer-link') Twitter
+                        span(class='footer-link-divider') &#xFF0D;
+                        a(href='href="https://github.com/WiIIiam278"' class='footer-link') GitHub

@@ -39,14 +39,14 @@ const limiter = rate({
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 })
 
-// Special page templates
-const ticket = fs.readFileSync(path.join(__dirname, 'template/ticket.html'), 'utf8');
-const readme = fs.readFileSync(path.join(__dirname, 'template/readme.html'), 'utf8');
-const docs = fs.readFileSync(path.join(__dirname, 'template/docs.html'), 'utf8');
-const error = fs.readFileSync(path.join(__dirname, 'template/error.html'), 'utf8');
-
 // Search caching
 let searchCache = {};
+
+// Home page
+app.get('/', (req, res) => {
+    res.render('home');
+});
+
 
 // Handle transcripts
 app.get('/transcript', (req, res) => {
@@ -55,7 +55,6 @@ app.get('/transcript', (req, res) => {
             sendError(res, '404');
             return;
         }
-        res.sendFile(req.url, {root: frontend});
         return;
     }
     let key = Object.keys(req.query)[0];
@@ -84,15 +83,18 @@ app.get('/transcript', (req, res) => {
                 .replace("</html>", "")
                 .replace("<!DOCTYPE html>", "");
         }).then(html => {
-            return formatTemplate(ticket, {'TRANSCRIPT_CONTENT': html});
-        }).then(ticket => {
-            res.send(ticket);
+            res.render('transcript', {transcript: html});
         }).catch(code => {
             sendError(res, code, 'That transcript is invalid or has expired.');
         });
         return;
     }
     sendError(res, '400', 'Bad request.');
+});
+
+// Serve the documentation index
+app.get('/docs', (req, res) => {
+    return res.render('docs-index');
 });
 
 // Serve documentation pages
@@ -127,12 +129,12 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
     if (fs.existsSync(pagePath)) {
         let sidebarPath = path.join(frontend, `docs/${name.toLowerCase()}/_Sidebar.md`);
         if (fs.existsSync(sidebarPath)) {
-            res.send(formatTemplate(docs, {
-                'PAGE_CONTENT': markdown.render(fs.readFileSync(pagePath, 'utf8')),
-                'SIDEBAR_CONTENT': markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
-                'PAGE_TITLE': page.replace(/-/g, ' '),
-                'PROJECT_NAME': project.name,
-            }));
+            res.render('docs', {
+                projectName: project.name,
+                pageName: page.replace(/-/g, ' '),
+                navigation: markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
+                markdown: markdown.render(fs.readFileSync(pagePath, 'utf8'))
+            });
         }
     } else {
         sendError(res, '404', 'Documentation page not found.');
@@ -322,44 +324,32 @@ app.get('*', (req, res) => {
 
     // If the file doesn't exist, serve the 404 page
     if (!fs.existsSync(fullUrl)) {
-        if (!fs.existsSync(fullUrl + '.html')) {
-            if (!fs.existsSync(fullUrl + '.md')) {
-                sendError(res, '404');
-                return;
-            } else {
-                urlModifiers = '.md';
-            }
+        if (!fs.existsSync(fullUrl + '.md')) {
+            sendError(res, '404');
+            return;
         } else {
-            urlModifiers = '.html';
+            urlModifiers = '.md';
         }
     }
 
-    // If the request is for a directory, serve the index.html file
-    if (fs.lstatSync(fullUrl + urlModifiers).isDirectory()) {
-        res.sendFile(path.join(req.url, 'index.html'), {root: frontend});
-    }
-
-    // If the request is for a file, serve it with the correct encoding
-    else {
-        // If the file is a .md file, parse it and serve it as HTML
-        if (fullUrl.endsWith('.md') || urlModifiers === '.md') {
-            res.send(formatTemplate(readme, {
-                'PAGE_CONTENT': markdown.render(fs.readFileSync(path
-                    .join(frontend, req.url + urlModifiers), 'utf8')),
-                'PAGE_TITLE': req.url.replace(/-/g, ' ').substring(1, req.url.length),
-            }));
-        } else {
-            res.sendFile(req.url + urlModifiers, {root: frontend});
-        }
+    // If the file is a .md (Markdown) readme file, parse it and serve it as HTML
+    if (fullUrl.endsWith('.md') || urlModifiers === '.md') {
+        res.render('readme', {
+            name: req.url.replace(/-/g, ' ').substring(1, req.url.length),
+            markdown: markdown.render(fs.readFileSync(path.join(frontend, req.url + urlModifiers), 'utf8'))
+        })
+    } else {
+        res.sendFile(req.url + urlModifiers, {root: frontend});
     }
 });
 
 
-// Display an error page
-const sendError = (res, code, message) => {
-    res.send(formatTemplate(error, {
-        'ERROR_CODE': code, 'ERROR_DESCRIPTION': message ? message : 'Make sure you entered the correct URL.'
-    }));
+// Display an error page with a code and description
+const sendError = (res, code, description) => {
+    res.render('error', {
+        'code': code,
+        'description': description ? description : 'Make sure you entered the correct URL.'
+    });
 }
 
 
@@ -401,6 +391,8 @@ projects.filter(project => project.documentation).forEach(project => {
 
 
 // Serve the web application
+app.set('view engine', 'pug');
+app.set('views', 'backend/views')
 app.listen(port, host, () => {
     console.log(`Server running at on ${host}:${port}`);
     console.log('[Pterodactyl] Ready');

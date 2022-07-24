@@ -1,0 +1,13 @@
+//- Template for an error page
+extends template
+
+append title
+    |  - #{code}
+
+block content
+    div(id='one-column-page-text' class='error-page-text')
+        h1 Error #{code}
+        p
+            | #{description}
+            br
+            a(href='/') Back to Home&hellip;

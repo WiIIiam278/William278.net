@@ -20,6 +20,7 @@
     "markdown-it-prism": "^2.2.3",
     "markdown-it-wikilinks": "^1.2.0",
     "node-fetch": "^3.2.4",
+    "pug": "^3.0.2",
     "sanitize-filename": "^1.6.3",
     "shelljs": "^0.8.5",
     "spiget": "^0.1.3"
