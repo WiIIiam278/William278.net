@@ -368,21 +368,6 @@ const updateDocs = (repository, name) => {
 }
 
 
-// Format a template with a map of paired keys and values
-const formatTemplate = (template, map) => {
-    let formatted = template;
-    for (const key in map) {
-        if (map.hasOwnProperty(key)) {
-            let occurrences = (formatted.match(new RegExp(`{{\\s*${key}\\s*}}`, 'g')) || []).length;
-            for (let i = 0; i < occurrences; i++) {
-                formatted = formatted.replace(`{{${key}}}`, map[key]);
-            }
-        }
-    }
-    return formatted;
-}
-
-
 // Update all project documentation
 console.log('Updating project documentation...');
 projects.filter(project => project.documentation).forEach(project => {
