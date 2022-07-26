@@ -39,12 +39,19 @@ const limiter = rate({
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 })
 
+// Get current git head version
+const version = require('child_process')
+    .execSync('git rev-parse HEAD')
+    .toString().trim().substring(0, 7);
+
 // Search caching
 let searchCache = {};
 
 // Home page
 app.get('/', (req, res) => {
-    res.render('home');
+    res.render('home', {
+        'version': version,
+    });
 });
 
 
@@ -83,7 +90,10 @@ app.get('/transcript', (req, res) => {
                 .replace("</html>", "")
                 .replace("<!DOCTYPE html>", "");
         }).then(html => {
-            res.render('transcript', {transcript: html});
+            res.render('transcript', {
+                'version': version,
+                'transcript': html
+            });
         }).catch(code => {
             sendError(res, code, 'That transcript is invalid or has expired.');
         });
@@ -94,7 +104,9 @@ app.get('/transcript', (req, res) => {
 
 // Serve the documentation index
 app.get('/docs', (req, res) => {
-    return res.render('docs-index');
+    return res.render('docs-index', {
+        'version': version,
+    });
 });
 
 // Serve documentation pages
@@ -130,10 +142,11 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
         let sidebarPath = path.join(content, `docs/${name.toLowerCase()}/_Sidebar.md`);
         if (fs.existsSync(sidebarPath)) {
             res.render('docs', {
-                projectName: project.name,
-                pageName: page.replace(/-/g, ' '),
-                navigation: markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
-                markdown: markdown.render(fs.readFileSync(pagePath, 'utf8'))
+                'version': version,
+                'projectName': project.name,
+                'pageName': page.replace(/-/g, ' '),
+                'navigation': markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
+                'markdown': markdown.render(fs.readFileSync(pagePath, 'utf8'))
             });
         }
     } else {
@@ -341,8 +354,9 @@ app.get('*', (req, res) => {
     // If the file is a .md (Markdown) readme file, parse it and serve it as HTML
     if (fullUrl.endsWith('.md') || urlModifiers === '.md') {
         res.render('readme', {
-            name: req.url.replace(/-/g, ' ').substring(1, req.url.length),
-            markdown: markdown.render(fs.readFileSync(path.join(content, req.url + urlModifiers), 'utf8'))
+            'version': version,
+            'name': req.url.replace(/-/g, ' ').substring(1, req.url.length),
+            'markdown': markdown.render(fs.readFileSync(path.join(content, req.url + urlModifiers), 'utf8'))
         })
     } else {
         res.sendFile(req.url + urlModifiers, {root: content});
@@ -353,6 +367,7 @@ app.get('*', (req, res) => {
 // Display an error page with a code and description
 const sendError = (res, code, description) => {
     res.render('error', {
+        'version': version,
         'code': code,
         'description': description ? description : 'Make sure you entered the correct URL.'
     });
@@ -387,10 +402,10 @@ projects.filter(project => project.documentation).forEach(project => {
     updateDocs(project.repository, project.name);
 });
 
-
 // Serve the web application
 app.set('view engine', 'pug');
 app.set('views', 'views')
+
 app.listen(port, host, () => {
     console.log(`Server running at on ${host}:${port}`);
     console.log('[Pterodactyl] Ready');
