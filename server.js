@@ -362,6 +362,13 @@ const sendError = (res, code, description) => {
 // Updates plugin documentation
 const updateDocs = (repository, name) => {
     let wiki = repository + '.wiki.git';
+
+    // Check if the content /docs directory exists, if it does not create it
+    if (!fs.existsSync(path.join(content, 'docs'))) {
+        fs.mkdirSync(path.join(content, 'docs'));
+    }
+
+    // Pull docs from the wikis
     const filePath = path.join(content, `docs/${name.toLowerCase()}`);
     git(wiki, filePath, function (err) {
         if (err) {
