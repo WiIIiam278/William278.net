@@ -38,7 +38,7 @@ window.onload = () => {
     }).then(() => {
         let links = document.getElementsByTagName('a');
         for (let i = 0; i < links.length; i++) {
-            if (links[i].hostname !== window.location.hostname && (links[i].innerText.length > 0) && links[i].className !== 'footer-link' && links[i].className !== 'button-link') {
+            if (links[i].hostname !== window.location.hostname && (links[i].innerText.length > 0) && links[i].className !== 'footer-link' && links[i].className !== 'button-link' && links[i].id !== 'site-version-indicator') {
                 links[i].innerHTML += '&nbsp;<i class="fa-solid fa-arrow-up-right-from-square"></i>'
             }
         }
