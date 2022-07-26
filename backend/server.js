@@ -334,7 +334,7 @@ app.get('*', (req, res) => {
             sendError(res, '404');
             return;
         } else {
-            urlModifiers = 'dr.md';
+            urlModifiers = '.md';
         }
     }
 
