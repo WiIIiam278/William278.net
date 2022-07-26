@@ -23,35 +23,14 @@ window.onload = () => {
         }
 
         document.getElementById("transcript-metadata").innerHTML = formattedMeta;
-    }
 
-    // Let people view images nicely
-    const CLASS_NAMES = ["message-attachment", "embed-image", "embed-thumbnail"]
-    for (let j = 0; j < CLASS_NAMES.length; j++) {
-        let images = document.getElementsByClassName(CLASS_NAMES[j]);
+        // Handle broken images
+        let images = document.getElementsByTagName('img');
         for (let i = 0; i < images.length; i++) {
-            const viewer = new Viewer(images[i], {
-                inline: false,
-                navbar: false,
-                title: false,
-                toolbar: false,
-                fullscreen: false,
-                loop: false,
-                movable: false,
-                rotatable: false,
-                scalable: false,
-                zoomable: false,
-                zoomOnWheel: false,
-                zoomOnTouch: false,
-                slideOnTouch: false,
-                toggleOnDblclick: false,
-                tooltip: false,
-                transition: false,
-            });
-
-            images[i].addEventListener("click", function () {
-                viewer.show(true);
-            });
+            images[i].onerror = function () {
+                this.src = '/images/missing-image.png';
+                this.alt = 'Missing image';
+            }
         }
     }
 };

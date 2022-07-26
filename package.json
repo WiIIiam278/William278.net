@@ -2,7 +2,7 @@
   "name": "william278.net",
   "version": "2.0.0",
   "description": "Open source Minecraft server & software projects.",
-  "main": "backend/server.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

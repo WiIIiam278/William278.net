@@ -30,7 +30,7 @@ const markdown = new MarkdownIt({
 const app = express();
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8000;
-const frontend = path.join(__dirname, '../frontend');
+const content = path.join(__dirname, 'content');
 const projects = JSON.parse(fs.readFileSync(path.join(__dirname, 'projects.json'), 'utf8'));
 const limiter = rate({
     windowMs: 10 * 60 * 1000, // 10 minutes
@@ -125,9 +125,9 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
     }
 
     // Send the page
-    let pagePath = path.join(frontend, `docs/${name.toLowerCase()}/${page}.md`);
+    let pagePath = path.join(content, `docs/${name.toLowerCase()}/${page}.md`);
     if (fs.existsSync(pagePath)) {
-        let sidebarPath = path.join(frontend, `docs/${name.toLowerCase()}/_Sidebar.md`);
+        let sidebarPath = path.join(content, `docs/${name.toLowerCase()}/_Sidebar.md`);
         if (fs.existsSync(sidebarPath)) {
             res.render('docs', {
                 projectName: project.name,
@@ -227,14 +227,14 @@ app.get(['/api/search-docs/(:name)?', '/api/search-docs'], (req, res) => {
 
     const results = [];
     for (let project of projectsToSearch) {
-        // List page names that end with .md from the frontend
-        const pages = fs.readdirSync(path.join(frontend, `docs/${project.name.toLowerCase()}`));
+        // List page names that end with .md from the content
+        const pages = fs.readdirSync(path.join(content, `docs/${project.name.toLowerCase()}`));
         for (const page of pages) {
             if (page.endsWith('.md')) {
                 // Search against the page name and content
                 let pageName = page.slice(0, -3);
                 let nameMatches = searchPage(query, pageName);
-                let contentMatches = searchPage(query, fs.readFileSync(path.join(frontend, `docs/${project.name.toLowerCase()}/${page}`), 'utf8'));
+                let contentMatches = searchPage(query, fs.readFileSync(path.join(content, `docs/${project.name.toLowerCase()}/${page}`), 'utf8'));
 
                 // Ignore meta pages (_Sidebar, _Footer & Home)
                 if (pageName.startsWith('_') || pageName === 'Home') {
@@ -302,7 +302,7 @@ app.get('/api/projects/:name/version', (req, res) => {
 });
 
 // Prepare the sitemap and server settings
-app.use(express.static(frontend));
+app.use(express.static(content));
 app.use(['/api/projects', '/api/projects/:name', '/api/projects/:name/version', '/api/update-docs'], limiter);
 let map = sitemap({generate: app});
 
@@ -319,7 +319,7 @@ app.get('/robots.txt', (req, res) => {
 
 // Handle all other page requests
 app.get('*', (req, res) => {
-    let fullUrl = path.join(frontend, req.url);
+    let fullUrl = path.join(content, req.url);
     let urlModifiers = '';
 
     // If the request ends with a forward slash, redirect to the same page without the forward slash
@@ -342,10 +342,10 @@ app.get('*', (req, res) => {
     if (fullUrl.endsWith('.md') || urlModifiers === '.md') {
         res.render('readme', {
             name: req.url.replace(/-/g, ' ').substring(1, req.url.length),
-            markdown: markdown.render(fs.readFileSync(path.join(frontend, req.url + urlModifiers), 'utf8'))
+            markdown: markdown.render(fs.readFileSync(path.join(content, req.url + urlModifiers), 'utf8'))
         })
     } else {
-        res.sendFile(req.url + urlModifiers, {root: frontend});
+        res.sendFile(req.url + urlModifiers, {root: content});
     }
 });
 
@@ -362,7 +362,7 @@ const sendError = (res, code, description) => {
 // Updates plugin documentation
 const updateDocs = (repository, name) => {
     let wiki = repository + '.wiki.git';
-    const filePath = path.join(frontend, `docs/${name.toLowerCase()}`);
+    const filePath = path.join(content, `docs/${name.toLowerCase()}`);
     git(wiki, filePath, function (err) {
         if (err) {
             console.error('An error occurred pulling ' + wiki + ' to ' + filePath)
@@ -383,7 +383,7 @@ projects.filter(project => project.documentation).forEach(project => {
 
 // Serve the web application
 app.set('view engine', 'pug');
-app.set('views', 'backend/views')
+app.set('views', 'views')
 app.listen(port, host, () => {
     console.log(`Server running at on ${host}:${port}`);
     console.log('[Pterodactyl] Ready');
