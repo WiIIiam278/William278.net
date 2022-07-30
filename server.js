@@ -3,11 +3,15 @@ const path = require('path');
 const fs = require('fs');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const git = require('git-clone-or-pull');
-const sitemap = require('express-sitemap');
 const rate = require('express-rate-limit')
 
+// Sitemap and robots.txt
+const robots = require('express-robots-txt');
+const {SitemapStream} = require('sitemap');
+const {createGzip} = require('zlib')
+
 // Spiget fetching
-const {Spiget} = require('spiget');
+const {Spiget, Pagination} = require('spiget');
 const spiget = new Spiget("William278UpdateApi");
 
 // GitHub flavoured Markdown parsing
@@ -30,14 +34,29 @@ const markdown = new MarkdownIt({
 const app = express();
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8000;
+const domain = process.env.DOMAIN || 'https://william278.net';
 const content = path.join(__dirname, 'content');
 const projects = JSON.parse(fs.readFileSync(path.join(__dirname, 'projects.json'), 'utf8'));
 const limiter = rate({
-    windowMs: 10 * 60 * 1000, // 10 minutes
+    windowMs: 10 * 60 * 100, // 1 minute
     max: 500, // Limit each IP to 1000 requests per `window` (here, per 15 minutes)
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-})
+});
+const ORGANIZATION = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "url": domain,
+    "logo": domain + "/images/icons/huskhelp.png",
+});
+
+// Robots.txt setup
+app.use(robots({
+    UserAgent: '*',
+    Disallow: '/api/',
+    CrawlDelay: '5',
+    Sitemap: domain + '/sitemap.xml',
+}));
 
 // Get current git head version
 const version = require('child_process')
@@ -51,6 +70,11 @@ let searchCache = {};
 app.get('/', (req, res) => {
     res.render('home', {
         'version': version,
+        'projects': projects,
+        'title': 'Open source Minecraft server software & game projects - William278.net',
+        'description': 'Easily-accessible documentation and information site for all of William278\'s Minecraft plugins, projects & games.',
+        'breadcrumbs': generateBreadcrumbs(req.url),
+        'organization': ORGANIZATION
     });
 });
 
@@ -92,7 +116,11 @@ app.get('/transcript', (req, res) => {
         }).then(html => {
             res.render('transcript', {
                 'version': version,
-                'transcript': html
+                'transcript': html,
+                'title': `View HuskHelp Support Ticket Transcript (${key.split('/').pop()}) - William278.net`,
+                'description': `Read a transcript of this HuskHelp Discord support ticket (${key.split('/').pop()}), including messages and attatchments`,
+                'breadcrumbs': generateBreadcrumbs(req.url),
+                'organization': ORGANIZATION
             });
         }).catch(code => {
             sendError(res, code, 'That transcript is invalid or has expired.');
@@ -106,6 +134,10 @@ app.get('/transcript', (req, res) => {
 app.get('/docs', (req, res) => {
     return res.render('docs-index', {
         'version': version,
+        'title': 'Documentation for HuskHomes, HuskSync & more - William278.net',
+        'description': 'Documentation for William278\'s various projects, including HuskHomes, HuskSync, HuskTowns & HuskChat.',
+        'breadcrumbs': generateBreadcrumbs(req.url),
+        'organization': ORGANIZATION
     });
 });
 
@@ -141,12 +173,17 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
     if (fs.existsSync(pagePath)) {
         let sidebarPath = path.join(content, `docs/${name.toLowerCase()}/_Sidebar.md`);
         if (fs.existsSync(sidebarPath)) {
+            let pageTitle = page.replace(/-/g, ' ');
             res.render('docs', {
                 'version': version,
                 'projectName': project.name,
-                'pageName': page.replace(/-/g, ' '),
+                'pageName': pageTitle,
                 'navigation': markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
-                'markdown': markdown.render(fs.readFileSync(pagePath, 'utf8'))
+                'markdown': markdown.render(fs.readFileSync(pagePath, 'utf8')),
+                'title': `Documentation for ${project.name} - ${pageTitle} - William278.net`,
+                'description': `Read the documentation for ${project.name} by William278 - ${pageTitle} ${project.tags ? `(${project.tags.join(', ')})` : ''}`,
+                'breadcrumbs': generateBreadcrumbs(req.url),
+                'organization': ORGANIZATION
             });
         }
     } else {
@@ -268,6 +305,17 @@ app.get(['/api/search-docs/(:name)?', '/api/search-docs'], (req, res) => {
         }
     }
 
+    // Sort results by name matches first, followed by content matches
+    results.sort((a, b) => {
+        if (a.name_matches === b.name_matches) {
+            return b.content_matches - a.content_matches;
+        }
+        return b.name_matches - a.name_matches;
+    });
+
+    // Limit to first 15 results
+    results.splice(15);
+
     // Cache the result for this query
     searchCache[query.toLowerCase()] = {
         'projects': projectsToSearch,
@@ -295,15 +343,29 @@ app.get('/api/projects/:name', (req, res) => {
     }
 });
 
-// Serves data about the latest version of a specific project by name via Spiget
-app.get('/api/projects/:name/version', (req, res) => {
+// Serves data about the version history of a specific project by name via Spiget
+app.get('/api/projects/:name/versions', (req, res) => {
     const project = projects.find(project => project.name.toLowerCase() === req.params.name.toLowerCase());
     if (project) {
         let id = project.ids.spigot;
+        let results = req.query.results;
+        if (!results) {
+            results = 10;
+        }
+        results = results < 1 ? 1 : results > 100 ? 100 : results;
         if (id) {
-            spiget.getLatestResourceVersion(id).then(resource => {
+            spiget.getResourceVersions(id, new Pagination(results, 1, '-releaseDate')).then(resourceVersions => {
                 res.send({
-                    name: project.name, version: resource.name, date: resource.releaseDate
+                    'latest': {
+                        'number': resourceVersions[0].name,
+                        'published': resourceVersions[0].releaseDate,
+                    },
+                    'versions': resourceVersions.map(version => {
+                        return {
+                            'number': version.name,
+                            'published': version.releaseDate,
+                        };
+                    })
                 });
             });
         } else {
@@ -315,18 +377,113 @@ app.get('/api/projects/:name/version', (req, res) => {
 });
 
 // Prepare the sitemap and server settings
-app.use(express.static(content));
-app.use(['/api/projects', '/api/projects/:name', '/api/projects/:name/version', '/api/update-docs'], limiter);
-let map = sitemap({generate: app});
+app.use(['/api/projects', '/api/projects/:name', '/api/projects/:name/versions', '/api/update-docs', '/api/search-docs/(:name)?', '/api/search-docs'], limiter);
 
 // Handle sitemap requests
+let cachedSitemap;
 app.get('/sitemap.xml', (req, res) => {
-    map.XMLtoWeb(res);
+    res.header('Content-Type', 'application/xml');
+    res.header('Content-Encoding', 'gzip');
+
+    const location = 'London, United Kingdom';
+
+    // Returned cached sitemap if it exists
+    if (cachedSitemap) {
+        res.send(cachedSitemap)
+        return;
+    }
+
+    // Generate sitemap
+    try {
+        const sitemapStream = new SitemapStream({
+            hostname: domain
+        });
+        const pipeline = sitemapStream.pipe(createGzip())
+
+        // Write pages
+        sitemapStream.write({
+            url: '/',
+            changefreq: 'daily',
+            lastmod: new Date().toISOString(),
+            priority: 1,
+            img: {
+                url: '/images/icons/williamhead.png'
+            }
+        });
+        sitemapStream.write({
+            url: '/docs/',
+            changefreq: 'daily',
+            lastmod: fs.statSync(path.join('pages', 'home.pug')).mtime.toISOString(),
+            priority: 0.9
+        });
+
+        // Iterate through every .md file in the content/docs directory and subdirectories
+        for (const project of projects) {
+            if (project.repository && project.documentation) {
+                for (const page of fs.readdirSync(path.join(content, `docs/${project.id}`))) {
+                    if (page.endsWith('.md') && !page.startsWith('_') && page !== 'Home.md') {
+                        let pageName = page.slice(0, -3);
+                        if (project.icons && project.icons.png) {
+                            sitemapStream.write({
+                                url: `/docs/${project.id}/${pageName}`,
+                                changefreq: 'daily',
+                                lastmod: fs.statSync(path.join(content, `docs/${project.id}/${page}`)).mtime.toISOString(),
+                                priority: 0.8,
+                                img: {
+                                    url: `/images/icons/${project.icons.png}`
+                                }
+                            });
+                        } else {
+                            sitemapStream.write({
+                                url: `/docs/${project.id}/${pageName}`,
+                                changefreq: 'daily',
+                                lastmod: fs.statSync(path.join(content, `docs/${project.id}/${page}`)).mtime.toISOString(),
+                                priority: 0.8,
+                            });
+                        }
+                    }
+                }
+            }
+            if (project.readme) {
+                if (project.readme.startsWith('/')) {
+                    if (fs.existsSync(path.join(content, `${project.readme}.md`))) {
+
+                        if (project.icons && project.icons.png) {
+                            sitemapStream.write({
+                                url: project.readme,
+                                changefreq: 'daily',
+                                lastmod: fs.statSync(path.join(content, `${project.readme}.md`)).mtime.toISOString(),
+                                priority: 0.9,
+                                img: {
+                                    url: `/images/icons/${project.icons.png}`,
+                                }
+                            });
+                        } else {
+                            sitemapStream.write({
+                                url: project.readme,
+                                changefreq: 'daily',
+                                lastmod: fs.statSync(path.join(content, `${project.readme}.md`)).mtime.toISOString(),
+                                priority: 0.9
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        sitemapStream.end();
+        pipeline.pipe(res).on('error', (error) => {
+            throw error;
+        });
+    } catch (error) {
+        console.error(error)
+        res.status(500).end('Internal error generating sitemap');
+    }
 });
 
-// Handle robots.txt requests
+// Handle robots.txt
 app.get('/robots.txt', (req, res) => {
-    map.TXTtoWeb(res);
+    res.send();
 });
 
 
@@ -353,10 +510,15 @@ app.get('*', (req, res) => {
 
     // If the file is a .md (Markdown) readme file, parse it and serve it as HTML
     if (fullUrl.endsWith('.md') || urlModifiers === '.md') {
+        let pageName = req.url.replace(/-/g, ' ').substring(1, req.url.length);
         res.render('readme', {
             'version': version,
-            'name': req.url.replace(/-/g, ' ').substring(1, req.url.length),
-            'markdown': markdown.render(fs.readFileSync(path.join(content, req.url + urlModifiers), 'utf8'))
+            'name': pageName,
+            'markdown': markdown.render(fs.readFileSync(path.join(content, req.url + urlModifiers), 'utf8')),
+            'title': `About ${pageName} - William278.net`,
+            'description': `Learn all about ${pageName}, on William278.net ${project.tags ? `(${project.tags.join(', ')})` : ''}`,
+            'breadcrumbs': generateBreadcrumbs(req.url),
+            'organization': ORGANIZATION
         })
     } else {
         res.sendFile(req.url + urlModifiers, {root: content});
@@ -369,8 +531,53 @@ const sendError = (res, code, description) => {
     res.render('error', {
         'version': version,
         'code': code,
-        'description': description ? description : 'Make sure you entered the correct URL.'
+        'details': description ? description : 'Make sure you entered the correct URL.',
+        'title': `Error ${code} - William278.net`,
+        'description': `Error ${code} - ${description ? description : 'Make sure you entered the correct URL.'}`,
+        'breadcrumbs': generateBreadcrumbs(domain + '/error-' + code),
+        'organization': ORGANIZATION
     });
+}
+
+// Generates structured data breadcrumbs for the current page
+const BREADCRUMB_FORMAT = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': []
+}
+const generateBreadcrumbs = (url) => {
+    let breadcrumbs = JSON.parse(JSON.stringify(BREADCRUMB_FORMAT));
+    let doneEndpoints = [];
+    url = url.replace('https://william278.net/', '');
+    let currentParts = '';
+    url.split('/').forEach((part, index) => {
+        currentParts += part !== '' ? part + '/' : '';
+        let pageName = part.replace(/-/g, ' ');
+        if (pageName === 'Home') {
+            return;
+        }
+        if (part === '') {
+            pageName = 'Home';
+        }
+        // if the page name matches a project name in lower case use that
+        for (const project of projects) {
+            if (project.name.toLowerCase() === pageName.toLowerCase()) {
+                pageName = project.name;
+                break;
+            }
+        }
+        if (doneEndpoints.includes(domain + '/' + currentParts)) {
+            return;
+        }
+        doneEndpoints += domain + currentParts;
+        breadcrumbs.itemListElement.push({
+            '@type': 'ListItem',
+            'position': index + 1,
+            'name': pageName.charAt(0).toUpperCase() + pageName.slice(1),
+            'item': domain + '/' + currentParts
+        });
+    });
+    return JSON.stringify(breadcrumbs);
 }
 
 
@@ -404,7 +611,7 @@ projects.filter(project => project.documentation).forEach(project => {
 
 // Serve the web application
 app.set('view engine', 'pug');
-app.set('views', 'views')
+app.set('views', 'pages')
 
 app.listen(port, host, () => {
     console.log(`Server running at on ${host}:${port}`);

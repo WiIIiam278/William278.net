@@ -1,6 +1,7 @@
 /* Colors */
 :root {
     --accent-color: #00fb9a;
+    --product-blue: #142b42;
     --main-white: #f5f5f5;
     --main-gray: #373737;
     --main-light-gray: #969696;
@@ -105,7 +106,7 @@ a:hover {
     text-decoration: none !important;
 }
 
-.main-page-product-button {
+.project-button {
     text-decoration: none !important;
 }
 
@@ -156,29 +157,6 @@ code {
     flex: 6.5;
 }
 
-@media screen and (max-width: 500px) {
-    #navbar {
-        -webkit-flex-flow: column wrap;
-        flex-flow: column wrap;
-    }
-
-    #navbar-links {
-        flex: 1;
-        justify-content: center;
-        padding: 0;
-    }
-
-    #navbar-logo {
-        flex: 1;
-        text-align: center;
-        padding: 0.5em 0 0;
-    }
-
-    #site-version-indicator {
-        display: none;
-    }
-}
-
 /* Footer */
 #footer {
     text-align: center;
@@ -223,7 +201,221 @@ code {
     margin: 0 1em;
 }
 
-@media screen and (max-width: 600px) {
+/* Head icon */
+#main-page-head-icon {
+    display: inline-block;
+    float: right;
+    margin: 1.5em 0.5em;
+    border-radius: 0.5em;
+}
+
+/* Tagline */
+#main-page-tagline {
+    font-size: large;
+}
+
+/* Project boxes grid */
+#project-box-grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+
+.project-box {
+    border: 0.15em solid var(--main-light-gray);
+    border-radius: 0.5em;
+    min-width: 50%;
+    max-width: 100%;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    margin: 0.5em 0.5em;
+    padding: 0.5em 0.75em;
+}
+
+/* Project title, pills and image */
+.project-header {
+    display: flex;
+    width: 100%;
+    height: fit-content;
+    justify-content: space-between;
+}
+
+.project-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: fit-content;
+}
+
+.project-title {
+    display: flex;
+    margin: 0;
+}
+
+.project-pills {
+    margin: 0.2em 0 0 -0.2em;
+    display: flex;
+    justify-content: left;
+}
+
+.project-image {
+    max-width: 64px;
+    height: 100%;
+    border-radius: 0.5em;
+}
+
+.project-pill {
+    padding: 0.2em 0.45em;
+    border-radius: 0.5em;
+    background-color: var(--main-gray);
+    font-size: 0.9em;
+    margin: 0 0.15em;
+}
+
+/* Brief project description */
+.project-tagline {
+    width: 75%;
+    flex: 3;
+    margin: 0.8em 0;
+}
+
+/* Project buttons */
+.project-buttons {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.3em;
+    align-self: flex-end;
+}
+
+.project-buttons .project-button {
+    font-size: 1.5em;
+    margin: 0.1em 0.2em 0.1em 0.2em;
+}
+
+.project-buttons .button-link {
+    font-size: 1em !important;
+    position: relative;
+    top: -0.2em;
+}
+
+.project-buttons .item-divider {
+    color: var(--main-light-gray);
+    margin: 0 0.25em;
+    position: relative;
+    top: -0.1em;
+}
+
+#project-box-grid-expand-button {
+    display: flex;
+    justify-content: center;
+}
+
+#expand-button-link {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#expand-button-icon {
+    margin-top: 0.1em;
+    margin-right: 0.3em;
+}
+
+/* Adjust the projects grid based on screen size */
+@media screen and (max-width: 1200px) and (min-width: 901px) {
+    .project-header {
+        height: fit-content;
+        justify-content: center;
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+    .project-details {
+        display: flex;
+        align-items: center;
+    }
+
+    .project-image {
+        align-self: center;
+        margin-bottom: 0.3em;
+    }
+}
+
+@media screen and (max-width: 650px) and (min-width: 450px) {
+    .project-header {
+        height: fit-content;
+        justify-content: center;
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+    .project-details {
+        display: flex;
+        align-items: center;
+    }
+
+    .project-image {
+        align-self: center;
+        margin-bottom: 0.3em;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    .project-header {
+        height: fit-content;
+        justify-content: center;
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+
+    .project-details {
+        display: flex;
+        align-items: center;
+    }
+
+    .project-image {
+        align-self: center;
+        margin-bottom: 0.3em;
+    }
+}
+
+@media screen and (max-width: 900px) and (min-width: 500px) {
+    #project-box-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+@media screen and (max-width: 450px) {
+    #project-box-grid {
+        grid-template-columns: repeat(1, 2fr);
+    }
+}
+
+/* Mobile site layout */
+@media screen and (max-width: 500px) {
+    #navbar {
+        -webkit-flex-flow: column wrap;
+        flex-flow: column wrap;
+    }
+
+    #navbar-links {
+        flex: 1;
+        justify-content: center;
+        padding: 0;
+    }
+
+    #navbar-logo {
+        flex: 1;
+        text-align: center;
+        padding: 0.5em 0 0;
+    }
+
+    #site-version-indicator {
+        display: none;
+    }
+
     #main-page-two-column {
         -webkit-flex-flow: column-reverse wrap;
         flex-flow: column-reverse wrap;
@@ -240,95 +432,6 @@ code {
     }
 }
 
-/* Head icon */
-#main-page-head-icon {
-    display: inline-block;
-    float: right;
-    margin: 1.5em 0.5em;
-    border-radius: 0.5em;
-}
-
-/* Tagline */
-#main-page-tagline {
-    font-size: large;
-}
-
-/* Main page product images */
-#main-page-product-grid {
-    display: grid;
-    width: 100%;
-    grid-template-columns: repeat(2, 1fr);
-}
-
-/* Modify items per row based on screen size */
-@media screen and (max-width: 950px) {
-    #main-page-product-grid {
-        grid-template-columns: repeat(1, 1fr);
-    }
-
-    @media screen and (max-width: 600px) {
-        #main-page-product-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        @media screen and (max-width: 450px) {
-            #main-page-product-grid {
-                grid-template-columns: repeat(1, 1fr);
-            }
-        }
-    }
-}
-
-.main-page-product {
-    border: 0.15em solid var(--main-light-gray);
-    border-radius: 0.5em;
-    max-width: 93.5%;
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    -webkit-flex-wrap: wrap;
-    margin-bottom: 1em;
-}
-
-.main-page-product .main-page-product-title {
-    margin: -0.8em 0 0 0.5em;
-    background: var(--main-background);
-    padding: 0 0.5em;
-    display: inline-block;
-    font-weight: bold;
-    position: absolute;
-}
-
-.main-page-product .main-page-product-content {
-    padding: 0.6em;
-    width: 75%;
-    flex: 3;
-    margin: 0.2em 0;
-}
-
-.main-page-product .main-page-product-image {
-    padding: 0.6em;
-    width: 20%;
-    flex: 1;
-    max-height: 75px;
-}
-
-.main-page-product .main-page-product-buttons {
-    width: 100%;
-    text-align: center;
-    font-size: x-large;
-    margin-bottom: 0.5em;
-    align-self: flex-end;
-}
-
-.main-page-product .main-page-product-buttons .main-page-product-button {
-    padding: 0 0.1em 0 0.1em;
-}
-
-.main-page-product .main-page-product-buttons .main-page-product-docs {
-    font-size: large;
-    margin-left: 1em;
-}
 
 /* Docs page columns */
 #page-with-sidebar {
@@ -405,11 +508,10 @@ code {
     margin: 1em 0 0 0;
 }
 
-#docs-breadcrumbs .docs-breadcrumb-divider {
+#docs-breadcrumbs .item-divider {
     color: var(--main-light-gray);
     margin: 0 0.4em;
 }
-
 
 @media screen and (max-width: 750px) {
     #page-with-sidebar {

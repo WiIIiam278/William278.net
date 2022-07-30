@@ -1,9 +1,6 @@
 //- Template for a documentation page with Markdown content
 extends sidebar-page
 
-append title
-    |  - #{projectName} - #{pageName}
-
 append styles
     link(rel='stylesheet' href='/prism.css')
 
@@ -21,10 +18,10 @@ block sidebar-content
 block main-content
     div(id='docs-breadcrumbs')
         a(href='/docs/') Docs
-        span(class='docs-breadcrumb-divider') /
+        span(class='item-divider') /
         a(href=`/docs/${projectName}/`) #{projectName}
-        span(class='docs-breadcrumb-divider') /
+        span(class='item-divider') /
         a(href=`/docs/${projectName}/${pageName}/` class='docs-index.pug-hidden') #{pageName}
-        span(class='docs-breadcrumb-divider docs-index.pug-hidden') /
+        span(class='item-divider docs-index.pug-hidden') /
     h1(id='docs-page-title') #{pageName}
     div(id='docs-page-content') !{markdown}

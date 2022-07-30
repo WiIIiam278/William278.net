@@ -1,11 +1,10 @@
 //- Master page template
 doctype html
+
 html(lang='en')
     head
-        title
-            block title
-                | William278
-        meta(name='description', content='Open source Minecraft server software & game projects by William278.')
+        title #{title}
+        meta(name='description', content=description)
 
         block styles
             link(rel='stylesheet', href='/style.css')
@@ -32,6 +31,9 @@ html(lang='en')
         block scripts
             script(src='//code.jquery.com/jquery-1.10.2.js')
             script(src='https://kit.fontawesome.com/aa4c023dda.js', crossorigin='anonymous')
+            script(type='application/ld+json') !{breadcrumbs}
+            script(type='application/ld+json') !{organization}
+
 
     body
         header

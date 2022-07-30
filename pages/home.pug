@@ -1,0 +1,97 @@
+//- The site homepage
+extends template
+
+append scripts
+    script(src='/projects-grid.js')
+
+block content
+    div(id='main-page-two-column')
+        div(id='main-page-left-column')
+            h2 My projects
+            div(id='project-box-grid')
+                - for (var i = 0; i < projects.length; i++)
+                    - var project = projects[i];
+                    div(class='project-box')
+                        div(class='project-header')
+                            div(class='project-details')
+                                h3(class='project-title') #{project.name}
+                                div(class='project-pills')
+                                    - if (project.tags)
+                                        - for (var j = 0; j < project.tags.length; j++)
+                                            - var pill = project.tags[j];
+                                            span(class='project-pill') #{project.tags[j]}
+                            - if (project.icons)
+                                - if (project.icons.svg)
+                                    object(class='project-image' data='/images/icons/' + project.icons.svg type='image/svg+xml' width='75')
+                                - else
+                                    img(class='project-image' src='/images/icons/' + project.icons.png alt='Project icon')
+                        p(class='project-tagline') #{project.tagline}
+                        div(class='project-buttons')
+                            - var hasIcons = false;
+                            - if (project.repository)
+                                - hasIcons = true;
+                                a(href=project.repository target='_blank' class='project-button fa-brands fa-github')
+                            - if (project.ids)
+                                - hasIcons = true;
+                                - if (project.ids.spigot)
+                                    a(href='https://www.spigotmc.org/resources/' + project.ids.spigot target='_blank' class='project-button fa-solid fa-faucet')
+                                - if (project.ids.polymart)
+                                    a(href='https://polymart.org/resource/' + project.ids.polymart target='_blank' class='project-button fa-solid fa-p')
+                                - if (project.ids.songoda)
+                                    a(href='https://songoda.com/marketplace/product/' + project.ids.polymart target='_blank' class='project-button fa-solid fa-shield-halved')
+                                - if (project.ids.itch)
+                                    a(href=project.ids.itch target='_blank' class='project-button fa-brands fa-itch-io')
+                            - if (project.documentation || project.readme)
+                                - if (hasIcons)
+                                    span(class='project-button item-divider') |
+                                - if (project.documentation)
+                                    a(href='/docs/' + project.id class='project-button button-link') Docs
+                                - if (project.readme)
+                                    a(href=project.readme class='project-button button-link') About
+            div(id='project-box-grid-expand-button')
+                a(id='expand-button-link')
+                    i(class='fas fa-chevron-down' id='expand-button-icon')
+                    span(id='expand-button-text') Expand
+
+        div(id='main-page-right-column')
+            a(href='https://twitter.com/William27528')
+                img(src='/images/icons/williamhead.png' id='main-page-head-icon' alt='The William278 head icon')
+
+            h2 William278.net
+            p(id='main-page-tagline') Open source Minecraft server software & game projects.
+            p This site contains easily-accessible documentation and information all about my various projects.
+                span &#32;
+                | Additionally, I provide human support for my Minecraft plugins through the HuskHelp discord.
+            br
+            div
+                a(class='button-link' href='/docs') Docs
+                span &nbsp;
+                a(class='button-link' href='https://discord.gg/tVYhJfyDWG') Support
+
+            hr
+
+            h3
+                i(class='fa-solid fa-comment-dollar')
+                span &nbsp;
+                | Commissions
+            p I'm not currently open for commissions. Thank you for your understanding!
+
+            h3
+                i(class='fa-solid fa-wrench')
+                span &nbsp;
+                | Updates
+            p I regularly update my plugins to support new versions, add new features and to fix bugs. When I do so, I will issue an announcement in the HuskHelp discord.
+            p If you would like to receive notifications when I post an announcement and/or gain access to preview builds, you can use the buttons in the
+                span &#32;
+                code #role-picker
+                span &#32;
+                | channel to opt-in to notifications
+
+            h3
+                i(class='fa-solid fa-box')
+                span &nbsp;
+                | Other projects
+            h4 Haroohie Translation Club
+            p I'm a member of the Haroohie Translation club, a fan-translation group working on translating games from the Haruhi Suzumiya series!
+                span &#32;
+                a(href='https://haroohie.club/' target='_blank') More information&hellip;

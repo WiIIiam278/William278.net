@@ -1,16 +1,26 @@
 [
   {
+    "id": "huskhomes",
     "name": "HuskHomes",
     "repository": "https://github.com/WiIIiam278/HuskHomes2",
     "ids": {
       "spigot": "83767",
       "polymart": "284"
     },
+    "tags": [
+      "plugin",
+      "spigot"
+    ],
     "tagline": "A powerful, intuitive and flexible teleportation plugin",
     "documentation": true,
-    "icon": "huskhomes.svg"
+    "icons": {
+      "svg": "huskhomes.svg",
+      "png": "huskhomes.png"
+    },
+    "license": "Apache-2.0"
   },
   {
+    "id": "husksync",
     "name": "HuskSync",
     "repository": "https://github.com/WiIIiam278/HuskSync",
     "ids": {
@@ -18,11 +28,20 @@
       "polymart": "1634",
       "songoda": "758"
     },
+    "tags": [
+      "plugin",
+      "spigot"
+    ],
     "tagline": "A modern, cross-server player data synchronisation system",
     "documentation": true,
-    "icon": "husksync.svg"
+    "icons": {
+      "svg": "husksync.svg",
+      "png": "husksync.png"
+    },
+    "license": "Premium"
   },
   {
+    "id": "husktowns",
     "name": "HuskTowns",
     "repository": "https://github.com/WiIIiam278/HuskTowns",
     "ids": {
@@ -30,62 +49,139 @@
       "polymart": "1056",
       "songoda": "622"
     },
+    "tags": [
+      "plugin",
+      "spigot"
+    ],
     "tagline": "A super intuitive and cross-server compatible Towny-style protection",
     "documentation": true,
-    "icon": "husktowns.svg"
+    "icons": {
+      "svg": "husktowns.svg",
+      "png": "husktowns.png"
+    },
+    "license": "Premium"
   },
   {
+    "id": "huskchat",
     "name": "HuskChat",
     "repository": "https://github.com/WiIIiam278/HuskChat",
     "ids": {
       "spigot": "94496",
       "polymart": "1217"
     },
+    "tags": [
+      "plugin",
+      "proxy"
+    ],
     "tagline": "A smart, beautiful & customisable proxy chat plugin",
     "documentation": true,
-    "icon": "huskchat.svg"
+    "icons": {
+      "svg": "huskchat.svg",
+      "png": "huskchat.png"
+    },
+    "license": "Apache-2.0"
   },
   {
+    "id": "schematicupload",
     "name": "SchematicUpload",
     "repository": "https://github.com/WiIIiam278/SchematicUpload",
     "ids": {
       "spigot": "100657",
       "polymart": "2125"
     },
+    "tags": [
+      "plugin",
+      "spigot"
+    ],
     "tagline": "Provide users with a simple web interface for uploading schematics",
-    "documentation": false,
-    "icon": "schematicupload.svg"
+    "icons": {
+      "svg": "schematicupload.svg",
+      "png": "schematicupload.png"
+    },
+    "license": "Apache-2.0"
   },
   {
+    "id": "huskhomesgui",
     "name": "HuskHomesGUI",
     "repository": "https://github.com/WiIIiam278/HomeGUI",
     "ids": {
       "spigot": "91059",
       "polymart": "928"
     },
+    "tags": [
+      "plugin",
+      "spigot"
+    ],
     "tagline": "Show your HuskHomes homes in an easy-to-use GUI menu",
-    "documentation": false,
-    "icon": "huskhomesgui.svg"
+    "icons": {
+      "svg": "huskhomesgui.svg",
+      "png": "huskhomesgui.png"
+    },
+    "license": "GPL-3.0"
   },
   {
+    "id": "huskbungeertp",
     "name": "HuskBungeeRTP",
     "repository": "https://github.com/WiIIiam278/HuskBungeeRTP",
     "ids": {
       "spigot": "96352"
     },
+    "tags": [
+      "plugin",
+      "spigot"
+    ],
     "tagline": "A random teleport system that works cross-server. Requires HuskHomes",
-    "documentation": false,
-    "icon": "huskbungeertp.svg"
+    "icons": {
+      "svg": "huskbungeertp.svg",
+      "png": "huskbungeertp.png"
+    },
+    "license": "Apache-2.0"
   },
   {
+    "id": "signsearch",
     "name": "SignSearch",
     "repository": "https://github.com/WiIIiam278/SignSearch",
     "ids": {
       "spigot": "92369",
       "polymart": "1060"
     },
+    "tags": [
+      "plugin",
+      "spigot"
+    ],
     "tagline": "A simple and fast plugin that lets you search text of nearby signs",
-    "documentation": false,
-    "icon": "signsearch.svg"
+    "icons": {
+      "svg": "signsearch.svg",
+      "png": "signsearch.png"
+    },
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "timetobattle",
+    "name": "TimeToBattle.net",
+    "tags": [
+      "server"
+    ],
+    "tagline": "(2020-2022) A SMP Minecraft server with custom battle minigames",
+    "readme": "/timetobattle",
+    "icons": {
+      "svg": "timetobattle.svg",
+      "png": "timetobattle.png"
+    }
+  },
+  {
+    "id": "loaded_dice",
+    "name": "Loaded Dice",
+    "tags": [
+      "game"
+    ],
+    "tagline": "Play as a dice dude who lives in a die. A GMTK Game Jam '22 Submission for the theme \"Roll the Dice\"",
+    "ids": {
+      "itch": "https://william278.itch.io/loaded-dice"
+    },
+    "readme": "/loadeddice",
+    "icons": {
+      "png": "loaded-dice.png"
+    }
   }
 ]

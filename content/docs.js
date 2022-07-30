@@ -26,7 +26,7 @@ window.onload = () => {
         fetchedProjects = projects;
         fetchedProjects.forEach((project) => {
             if (project.documentation) {
-                pluginElements += '<li><object class="docs-project-icon" data="/images/icons/' + project.icon + '" type="image/svg+xml"></object>&nbsp;<a href="/docs/' + project.name.toLowerCase() + '">' + project.name + '</a></li>'
+                pluginElements += '<li><object class="docs-project-icon" data="/images/icons/' + project.icons.svg + '" type="image/svg+xml"></object>&nbsp;<a href="/docs/' + project.name.toLowerCase() + '">' + project.name + '</a></li>'
             }
         });
         return pluginElements;
@@ -121,7 +121,7 @@ window.onload = () => {
 
                     let resultIcon = document.createElement('object');
                     resultIcon.className = 'docs-project-icon';
-                    resultIcon.data = `/images/icons/${project.icon}`;
+                    resultIcon.data = `/images/icons/${project.icons.svg}`;
                     resultIcon.type = 'image/svg+xml';
                     resultElement.appendChild(resultIcon);
 

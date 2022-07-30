@@ -1,9 +1,6 @@
 //- The docs index page
 extends sidebar-page
 
-append title
-    |  - Docs
-
 append scripts
     script(src='/docs.js')
 
@@ -19,7 +16,7 @@ block sidebar-content
 block main-content
     div(id='docs-breadcrumbs')
         a(href='/docs/') Docs
-        span(class='docs-breadcrumb-divider') /
+        span(class='item-divider') /
     div(id='docs-page-content')
         h1(id='docs-page-title') Docs
         p You can find documentation for my various projects and products here. Please click through to each product wiki to find the information you need.
