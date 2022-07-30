@@ -515,8 +515,8 @@ app.get('*', (req, res) => {
             'version': version,
             'name': pageName,
             'markdown': markdown.render(fs.readFileSync(path.join(content, req.url + urlModifiers), 'utf8')),
-            'title': `About ${pageName} - William278.net`,
-            'description': `About ${pageName}, on William278.net`,
+            'title': `${pageName.charAt(0).toUpperCase() + pageName.slice(1)} - William278.net`,
+            'description': `Easily-accessible documentation and information site for all of William278's Minecraft plugins, projects & games`,
             'breadcrumbs': generateBreadcrumbs(req.url),
             'organization': ORGANIZATION
         })
