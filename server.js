@@ -516,7 +516,7 @@ app.get('*', (req, res) => {
             'name': pageName,
             'markdown': markdown.render(fs.readFileSync(path.join(content, req.url + urlModifiers), 'utf8')),
             'title': `About ${pageName} - William278.net`,
-            'description': `Learn all about ${pageName}, on William278.net ${project.tags ? `(${project.tags.join(', ')})` : ''}`,
+            'description': `About ${pageName}, on William278.net`,
             'breadcrumbs': generateBreadcrumbs(req.url),
             'organization': ORGANIZATION
         })
