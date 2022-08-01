@@ -184,8 +184,7 @@ const getProjectBoxData = () => {
 
         // Prepare project stats if this is a plugin
         if (project['tags'] && projectStats[project['id']]) {
-            let pluginIndex = project['tags'].findIndex(tag => tag.toLowerCase() === 'plugin');
-            if (pluginIndex !== -1) {
+            if ((project['tags']).includes('plugin')) {
                 projectData['stats'] = [];
                 for (const stat of Object.entries(projectStats[project['id']])) {
                     if (stat[0] === 'name') continue; // Ignore the 'name' stat
@@ -476,6 +475,8 @@ let projectStats = {};
 const getProjectStats = async () => {
     let stats = {};
     for (const project of projects) {
+        if (!project.tags) continue;
+        if (!project.tags.includes('plugin')) continue;
         if (project.ids) {
             stats[project.id] = {
                 'name': project.name,
@@ -500,10 +501,15 @@ app.get('/api/stats/:name', (req, res) => {
         return;
     }
     let project = projects.find(project => project.id.toLowerCase() === req.params.name.toLowerCase());
-    if (!project || !projectStats[project.id]) {
+    if (!project) {
         res.status(404).send('Invalid project');
         return;
     }
+    if (!projectStats[project.id]) {
+        res.status(400).send('No stats to return for this project');
+        return;
+    }
+
     res.send(projectStats[project.id]);
     getProjectStats().then(stats => {
         projectStats = stats;
