@@ -3,16 +3,13 @@ const path = require('path');
 const fs = require('fs');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const git = require('git-clone-or-pull');
-const rate = require('express-rate-limit')
+const rate = require('express-rate-limit');
+const mineget = require('mineget');
 
 // Sitemap and robots.txt
 const robots = require('express-robots-txt');
 const {SitemapStream} = require('sitemap');
 const {createGzip} = require('zlib')
-
-// Spiget fetching
-const {Spiget, Pagination} = require('spiget');
-const spiget = new Spiget("William278UpdateApi");
 
 // GitHub flavoured Markdown parsing
 const MarkdownIt = require('markdown-it');
@@ -49,6 +46,8 @@ const ORGANIZATION = JSON.stringify({
     "url": domain,
     "logo": domain + "/images/icons/huskhelp.png",
 });
+app.set('view engine', 'pug');
+app.set('views', 'pages')
 
 // Robots.txt setup
 app.use(robots({
@@ -58,13 +57,13 @@ app.use(robots({
     Sitemap: domain + '/sitemap.xml',
 }));
 
+// Rate limiter setup
+app.use('/api', limiter);
+
 // Get current git head version
 const version = require('child_process')
     .execSync('git rev-parse HEAD')
     .toString().trim().substring(0, 7);
-
-// Search caching
-let searchCache = {};
 
 // Home page
 app.get('/', (req, res) => {
@@ -77,7 +76,6 @@ app.get('/', (req, res) => {
         'organization': ORGANIZATION
     });
 });
-
 
 // Handle transcripts
 app.get('/transcript', (req, res) => {
@@ -160,11 +158,11 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
     // Find project with documentation by name
     let project = projects.find(project => project.name.toLowerCase() === name);
     if (!project) {
-        sendError(res, '404', 'Invalid product.');
+        sendError(res, '404', 'Invalid project.');
         return;
     }
     if (!project.documentation) {
-        sendError(res, '404', 'There are no documentation pages for this product.');
+        sendError(res, '404', 'There are no documentation pages for this project.');
         return;
     }
 
@@ -191,8 +189,8 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
     }
 });
 
-
-// Handle post requests to update project documentation
+// Handle post requests to update project documentation#
+let searchCache = {};
 app.post('/api/update-docs', (req, res) => {
     const name = req.body.name;
     const repository = req.body.repository;
@@ -209,7 +207,6 @@ app.post('/api/update-docs', (req, res) => {
     res.status(400).send('Bad request');
 });
 
-
 // Search for matches of the query in the read page string
 const searchPage = (query, markdown) => {
     let matches = [];
@@ -221,7 +218,6 @@ const searchPage = (query, markdown) => {
     }
     return matches;
 }
-
 
 // Serves a list of search results for a query term
 app.get(['/api/search-docs/(:name)?', '/api/search-docs'], (req, res) => {
@@ -325,12 +321,10 @@ app.get(['/api/search-docs/(:name)?', '/api/search-docs'], (req, res) => {
     res.send(results);
 });
 
-
 // Serves a list of all projects and data
 app.get('/api/projects', (req, res) => {
     res.send(projects);
 });
-
 
 // Serves data about a specific project by name
 app.get('/api/projects/:name', (req, res) => {
@@ -343,49 +337,50 @@ app.get('/api/projects/:name', (req, res) => {
     }
 });
 
-// Serves data about the version history of a specific project by name via Spiget
-app.get('/api/projects/:name/versions', (req, res) => {
-    const project = projects.find(project => project.name.toLowerCase() === req.params.name.toLowerCase());
-    if (project) {
-        let id = project.ids.spigot;
-        let results = req.query.results;
-        if (!results) {
-            results = 10;
+// Get statistics about a project
+let projectStats = {};
+const getProjectStats = async () => {
+    let stats = {};
+    for (const project of projects) {
+        if (project.ids) {
+            stats[project.id] = {
+                'name': project.name,
+                'downloads': (await mineget.downloads(project.ids))['total_downloads'],
+                'rating': (await mineget.rating(project.ids))['average_rating'],
+                'version': (await mineget.latest_version(project.ids))['latest_version'],
+            };
         }
-        results = results < 1 ? 1 : results > 100 ? 100 : results;
-        if (id) {
-            spiget.getResourceVersions(id, new Pagination(results, 1, '-releaseDate')).then(resourceVersions => {
-                res.send({
-                    'latest': {
-                        'number': resourceVersions[0].name,
-                        'published': resourceVersions[0].releaseDate,
-                    },
-                    'versions': resourceVersions.map(version => {
-                        return {
-                            'number': version.name,
-                            'published': version.releaseDate,
-                        };
-                    })
-                });
-            });
-        } else {
-            res.status(400).send('No Spigot ID for project');
-        }
-    } else {
-        res.status(404).send('Not found');
     }
+    return stats;
+}
+app.get('/api/stats', (req, res) => {
+    res.send(projectStats);
+    getProjectStats().then(stats => {
+        projectStats = stats;
+    });
 });
 
-// Prepare the sitemap and server settings
-app.use(['/api/projects', '/api/projects/:name', '/api/projects/:name/versions', '/api/update-docs', '/api/search-docs/(:name)?', '/api/search-docs'], limiter);
+app.get('/api/stats/:name', (req, res) => {
+    if (!req.params.name) {
+        res.status(400).send('No project specified');
+        return;
+    }
+    let project = projects.find(project => project.id.toLowerCase() === req.params.name.toLowerCase());
+    if (!project || !projectStats[project.id]) {
+        res.status(404).send('Invalid project');
+        return;
+    }
+    res.send(projectStats[project.id]);
+    getProjectStats().then(stats => {
+        projectStats = stats;
+    });
+});
 
 // Handle sitemap requests
 let cachedSitemap;
 app.get('/sitemap.xml', (req, res) => {
     res.header('Content-Type', 'application/xml');
     res.header('Content-Encoding', 'gzip');
-
-    const location = 'London, United Kingdom';
 
     // Returned cached sitemap if it exists
     if (cachedSitemap) {
@@ -602,18 +597,20 @@ const updateDocs = (repository, name) => {
     });
 }
 
-
 // Update all project documentation
 console.log('Updating project documentation...');
 projects.filter(project => project.documentation).forEach(project => {
     updateDocs(project.repository, project.name);
 });
 
-// Serve the web application
-app.set('view engine', 'pug');
-app.set('views', 'pages')
-
-app.listen(port, host, () => {
-    console.log(`Server running at on ${host}:${port}`);
-    console.log('[Pterodactyl] Ready');
+// Cache the project stats
+console.log('Caching project stats...');
+getProjectStats().then(stats => {
+    projectStats = stats;
+}).then(() => {
+    console.log('Starting server...');
+    app.listen(port, host, () => {
+        console.log(`Server running at on ${host}:${port}`);
+        console.log('[Pterodactyl] Ready');
+    });
 });

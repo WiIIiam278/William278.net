@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "app-root-path": "^3.0.0",
     "express": "^4.18.1",
     "express-rate-limit": "^6.4.0",
     "express-robots-txt": "^1.0.0",
@@ -19,11 +18,10 @@
     "markdown-it-anchor": "^8.6.4",
     "markdown-it-prism": "^2.2.3",
     "markdown-it-wikilinks": "^1.2.0",
+    "mineget": "^1.0.5",
     "node-fetch": "^3.2.4",
     "pug": "^3.0.2",
     "sanitize-filename": "^1.6.3",
-    "shelljs": "^0.8.5",
-    "sitemap": "^7.1.1",
-    "spiget": "^0.1.3"
+    "sitemap": "^7.1.1"
   }
 }
