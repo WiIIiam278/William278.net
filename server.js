@@ -34,6 +34,7 @@ const port = process.env.PORT || 8000;
 const domain = process.env.DOMAIN || 'https://william278.net';
 const content = path.join(__dirname, 'content');
 const projects = JSON.parse(fs.readFileSync(path.join(__dirname, 'projects.json'), 'utf8'));
+const platforms = JSON.parse(fs.readFileSync(path.join(__dirname, 'platforms.json'), 'utf8'));
 const limiter = rate({
     windowMs: 10 * 60 * 100, // 1 minute
     max: 500, // Limit each IP to 1000 requests per `window` (here, per 15 minutes)
@@ -65,11 +66,144 @@ const version = require('child_process')
     .execSync('git rev-parse HEAD')
     .toString().trim().substring(0, 7);
 
+// Returns a formatted stat
+const getFormattedStat = (stat, value) => {
+    let id = stat.toLowerCase();
+    let icon = '';
+    switch (id) {
+        case 'downloads': {
+            icon = 'fa-solid fa-download';
+            break;
+        }
+        case 'rating': {
+            icon = 'fa-solid fa-star';
+            break;
+        }
+        case 'version': {
+            icon = 'fa-solid fa-code-branch';
+            break;
+        }
+    }
+    let text;
+    switch (id) {
+        case 'downloads': {
+            // Parse as integer and format as thousands if over 1000
+            let downloads = parseInt(value);
+            if (downloads > 1000) {
+                downloads = downloads / 1000;
+                downloads = downloads.toFixed(1) + 'k';
+            }
+            text = downloads;
+            break;
+        }
+        case 'rating': {
+            // Parse as float and round to 1 decimal place
+            let rating = parseFloat(value);
+            rating = rating.toFixed(1);
+            text = rating;
+            break;
+        }
+        default: {
+            text = value;
+            break;
+        }
+    }
+    return {
+        'id': id,
+        'icon': icon,
+        'text': text,
+    }
+};
+
+// Prepares project box data for the homepage
+const getProjectBoxData = () => {
+    let projectBoxData = [];
+    for (const project of projects) {
+        let projectData = {};
+
+        // Prepare project name and description
+        projectData['id'] = project['id'];
+        projectData['name'] = project['name'];
+        projectData['description'] = project['tagline'];
+
+        // Prepare project tags
+        if (project['tags']) {
+            projectData['pills'] = project['tags'];
+        }
+
+        // Prepare project icon
+        if (project['icons']) {
+            if (project['icons']['svg']) {
+                projectData['icon'] = {
+                    'url': '/images/icons/' + project['icons']['svg'],
+                    'type': 'svg'
+                }
+            } else if (project['icons']['png']) {
+                projectData['icon'] = {
+                    'url': '/images/icons/' + project['icons']['png'],
+                    'type': 'png'
+                }
+            }
+        }
+
+        // Prepare platform icons
+        projectData['buttons'] = [];
+        if (project['repository']) {
+            projectData['buttons'].push({
+                'id': 'github',
+                'class': platforms['github']['icon'],
+                'link': project['repository']
+            })
+        }
+        if (project['ids']) {
+            Object.entries(project['ids']).forEach(entry => {
+                projectData['buttons'].push({
+                    'id': entry[0],
+                    'class': platforms[entry[0]]['icon'],
+                    'link': platforms[entry[0]]['url'].toString().replace('{id}', entry[1])
+                });
+            });
+        }
+
+        // Prepare page links
+        projectData['links'] = [];
+        if (project['documentation']) {
+            projectData['links'].push({
+                'id': 'documentation',
+                'text': 'Docs',
+                'link': '/docs/' + project['id'],
+            })
+        }
+        if (project['readme']) {
+            projectData['links'].push({
+                'id': 'readme',
+                'text': 'About',
+                'link': project['readme'],
+            })
+        }
+
+        // Prepare project stats if this is a plugin
+        if (project['tags'] && projectStats[project['id']]) {
+            let pluginIndex = project['tags'].findIndex(tag => tag.toLowerCase() === 'plugin');
+            if (pluginIndex !== -1) {
+                projectData['stats'] = [];
+                for (const stat of Object.entries(projectStats[project['id']])) {
+                    if (stat[0] === 'name') continue; // Ignore the 'name' stat
+                    projectData['stats'].push(getFormattedStat(stat[0], stat[1]));
+                }
+            }
+        }
+
+        projectBoxData.push(projectData);
+    }
+    return projectBoxData;
+};
+
 // Home page
 app.get('/', (req, res) => {
     res.render('home', {
         'version': version,
-        'projects': projects,
+        'projects': getProjectBoxData(),
         'title': 'Open source Minecraft server software & game projects - William278.net',
         'description': 'Easily-accessible documentation and information site for all of William278\'s Minecraft plugins, projects & games.',
         'breadcrumbs': generateBreadcrumbs(req.url),

@@ -60,6 +60,11 @@ table thead th {
     text-align: center;
 }
 
+/* Clickable objects */
+object {
+    pointer-events: none;
+}
+
 /* Blockquotes */
 blockquote {
     background-color: var(--main-gray);
@@ -103,10 +108,6 @@ a:hover {
 }
 
 .button-link {
-    text-decoration: none !important;
-}
-
-.project-button {
     text-decoration: none !important;
 }
 
@@ -239,7 +240,6 @@ code {
 .project-header {
     display: flex;
     width: 100%;
-    height: fit-content;
     justify-content: space-between;
 }
 
@@ -263,6 +263,9 @@ code {
 
 .project-image {
     max-width: 64px;
+    max-height: 64px;
+    min-width: 64px;
+    min-height: 64px;
     height: 100%;
     border-radius: 0.5em;
 }
@@ -272,40 +275,66 @@ code {
     border-radius: 0.5em;
     background-color: var(--main-gray);
     font-size: 0.9em;
+    white-space: nowrap;
     margin: 0 0.15em;
+}
+
+.project-body {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    min-height: fit-content;
+}
+
+.project-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.project-stat {
+    margin: 0.15em 0;
+    width: fit-content;
+    font-size: 0.9em;
+    color: var(--main-light-gray);
+    white-space: nowrap;
+}
+
+.project-stat i {
+    margin-right: 0.15em;
+}
+
+.project-description {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /* Brief project description */
 .project-tagline {
-    width: 75%;
-    flex: 3;
-    margin: 0.8em 0;
+    margin-right: 0.35em;
 }
 
 /* Project buttons */
 .project-buttons {
-    width: 100%;
-    text-align: center;
+    display: flex;
+    justify-content: flex-start;
+    justify-self: flex-end;
     margin-bottom: 0.3em;
-    align-self: flex-end;
 }
 
-.project-buttons .project-button {
+.project-button {
     font-size: 1.5em;
-    margin: 0.1em 0.2em 0.1em 0.2em;
+    text-decoration: none !important;
+    margin: 0 0.15em;
 }
 
 .project-buttons .button-link {
     font-size: 1em !important;
+    padding: 0.07em 0.2em !important;
     position: relative;
-    top: -0.2em;
-}
-
-.project-buttons .item-divider {
-    color: var(--main-light-gray);
-    margin: 0 0.25em;
-    position: relative;
-    top: -0.1em;
+    top: -0.15em;
 }
 
 #project-box-grid-expand-button {
@@ -341,6 +370,27 @@ code {
         align-self: center;
         margin-bottom: 0.3em;
     }
+
+    .project-body {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .project-buttons {
+        justify-content: center;
+    }
+
+    .project-stats {
+        display: block;
+        align-self: center;
+        text-align: center;
+        margin-top: 0.3em;
+    }
+
+    .project-stat {
+        margin: 0.15em 0.3em;
+    }
 }
 
 @media screen and (max-width: 650px) and (min-width: 450px) {
@@ -360,6 +410,27 @@ code {
         align-self: center;
         margin-bottom: 0.3em;
     }
+
+    .project-body {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .project-buttons {
+        justify-content: center;
+    }
+
+    .project-stats {
+        display: block;
+        align-self: center;
+        text-align: center;
+        margin-top: 0.3em;
+    }
+
+    .project-stat {
+        margin: 0.15em 0.3em;
+    }
 }
 
 @media screen and (max-width: 300px) {
@@ -378,6 +449,27 @@ code {
     .project-image {
         align-self: center;
         margin-bottom: 0.3em;
+    }
+
+    .project-body {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .project-buttons {
+        justify-content: center;
+    }
+
+    .project-stats {
+        display: block;
+        align-self: center;
+        text-align: center;
+        margin-top: 0.3em;
+    }
+
+    .project-stat {
+        margin: 0.15em 0.3em;
     }
 }
 

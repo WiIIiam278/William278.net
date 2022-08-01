@@ -9,47 +9,44 @@ block content
         div(id='main-page-left-column')
             h2 My projects
             div(id='project-box-grid')
-                - for (var i = 0; i < projects.length; i++)
-                    - var project = projects[i];
+                - for (var project of projects)
                     div(class='project-box')
                         div(class='project-header')
                             div(class='project-details')
                                 h3(class='project-title') #{project.name}
                                 div(class='project-pills')
-                                    - if (project.tags)
-                                        - for (var j = 0; j < project.tags.length; j++)
-                                            - var pill = project.tags[j];
-                                            span(class='project-pill') #{project.tags[j]}
-                            - if (project.icons)
-                                - if (project.icons.svg)
-                                    object(class='project-image' data='/images/icons/' + project.icons.svg type='image/svg+xml' width='75')
+                                    - if (project.pills)
+                                        - for (var pill of project.pills)
+                                            span(class='project-pill') #{pill}
+                            - if (project.icon)
+                                - if (project.buttons && project.buttons.length > 0)
+                                    a(href=project.buttons[0]['link'] title='View project on ' + project.buttons[0]['id'] class='project-image')
+                                        - if (project.icon.type === 'svg')
+                                            object(class='project-image' data=project.icon.url type='image/svg+xml')
+                                        - else
+                                            img(class='project-image' src=project.icon.url alt='Project icon')
                                 - else
-                                    img(class='project-image' src='/images/icons/' + project.icons.png alt='Project icon')
-                        p(class='project-tagline') #{project.tagline}
-                        div(class='project-buttons')
-                            - var hasIcons = false;
-                            - if (project.repository)
-                                - hasIcons = true;
-                                a(href=project.repository target='_blank' class='project-button fa-brands fa-github')
-                            - if (project.ids)
-                                - hasIcons = true;
-                                - if (project.ids.spigot)
-                                    a(href='https://www.spigotmc.org/resources/' + project.ids.spigot target='_blank' class='project-button fa-solid fa-faucet')
-                                - if (project.ids.polymart)
-                                    a(href='https://polymart.org/resource/' + project.ids.polymart target='_blank' class='project-button fa-solid fa-p')
-                                - if (project.ids.songoda)
-                                    a(href='https://songoda.com/marketplace/product/' + project.ids.polymart target='_blank' class='project-button fa-solid fa-shield-halved')
-                                - if (project.ids.itch)
-                                    a(href=project.ids.itch target='_blank' class='project-button fa-brands fa-itch-io')
-                            - if (project.documentation || project.readme)
-                                - if (hasIcons)
-                                    span(class='project-button item-divider') |
-                                - if (project.documentation)
-                                    a(href='/docs/' + project.id class='project-button button-link') Docs
-                                - if (project.readme)
-                                    a(href=project.readme class='project-button button-link') About
+                                    - if (project.icon.type === 'svg')
+                                        object(class='project-image' data=project.icon.url type='image/svg+xml')
+                                    - else
+                                        img(class='project-image' src=project.icon.url alt='Project icon')
+                        div(class='project-body')
+                            div(class='project-description')
+                                p(class='project-tagline') #{project.description}
+                                div(class='project-buttons')
+                                    - for (var button of project.buttons)
+                                        a(href=button.link class='project-button ' + button.class target='_blank' title='View project on ' + button.id)
+                                    - for (var link of project.links)
+                                        a(href=link.link class='project-button button-link' title='View project ' + link.id) #{link.text}
+                            div(class='project-stats')
+                                - if (project.stats)
+                                    - for (var stat of project.stats)
+                                        span(class='project-stat')
+                                            i(class=stat.icon)
+                                            span #{stat.text}
+
             div(id='project-box-grid-expand-button')
-                a(id='expand-button-link')
+                a(id='expand-button-link' title='Expand/contract project grid')
                     i(class='fas fa-chevron-down' id='expand-button-icon')
                     span(id='expand-button-text') Expand
 
@@ -64,9 +61,9 @@ block content
                 | Additionally, I provide human support for my Minecraft plugins through the HuskHelp discord.
             br
             div
-                a(class='button-link' href='/docs') Docs
+                a(class='button-link' href='/docs' title='Project documentation') Docs
                 span &nbsp;
-                a(class='button-link' href='https://discord.gg/tVYhJfyDWG') Support
+                a(class='button-link' href='https://discord.gg/tVYhJfyDWG' title='HuskHelp Discord invite link') Discord
 
             hr
 
@@ -94,4 +91,4 @@ block content
             h4 Haroohie Translation Club
             p I'm a member of the Haroohie Translation club, a fan-translation group working on translating games from the Haruhi Suzumiya series!
                 span &#32;
-                a(href='https://haroohie.club/' target='_blank') More information&hellip;
+                a(href='https://haroohie.club/' target='_blank' title='Go to haroohie.club for more information') More information&hellip;
