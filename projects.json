@@ -175,7 +175,7 @@
     "tags": [
       "game"
     ],
-    "tagline": "Play as a dice dude who lives in a die. A GMTK Game Jam '22 Submission for the theme \"Roll the Dice\"",
+    "tagline": "Play as a dude who lives in a die. A GMTK Game Jam '22 Submission for the theme \"Roll the Dice\"",
     "ids": {
       "itch": "https://william278.itch.io/loaded-dice"
     },
@@ -183,5 +183,28 @@
     "icons": {
       "png": "loaded-dice.png"
     }
+  },
+  {
+    "id": "bcsds",
+    "name": "Better Call Saul DS",
+    "repository": "https://github.com/WiIIiam278/BCSDS",
+    "tags": [
+      "game"
+    ],
+    "tagline": "Better Call Saul for the Nintendo DS, based on the popular show. Written in NFLib, libnds and C++",
+    "icons": {
+      "png": "bcsds.png"
+    },
+    "license": "Apache-2.0"
+  },
+  {
+    "id": "mineget",
+    "name": "Mineget",
+    "repository": "https://github.com/WiIIiam278/Mineget",
+    "tags": [
+      "library"
+    ],
+    "tagline": "Node package for aggregating data about Minecraft resources from various marketplaces",
+    "license": "Apache-2.0"
   }
 ]
