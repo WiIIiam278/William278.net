@@ -322,20 +322,18 @@ app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
     }
 });
 
-// Handle post requests to update project documentation#
+// Handle post requests to update project documentation
 let searchCache = {};
 app.post('/api/update-docs', (req, res) => {
-    const name = req.body.name;
-    const repository = req.body.repository;
-    if (name && repository) {
+    const id = req.body['name'];
+    const repository = req.body['repository'];
+    if (id && repository) {
         // Validate that projects contains the project
-        if (projects.find(project => project.repository === repository && project.name.toLowerCase() === name.toLowerCase())) {
-            updateDocs(repository, name);
+        if (projects.find(project => project['repository'] === repository && project.id.toLowerCase() === id.toLowerCase())) {
+            updateDocs(repository, id);
             res.status(200).send('OK');
+            searchCache = {}; // Clear the search cache
         }
-
-        // Clear the search cache
-        searchCache = {};
     }
     res.status(400).send('Bad request');
 });
@@ -717,7 +715,7 @@ const generateBreadcrumbs = (url) => {
 
 
 // Updates plugin documentation
-const updateDocs = (repository, name) => {
+const updateDocs = (repository, id) => {
     let wiki = repository + '.wiki.git';
 
     // Check if the content /docs directory exists, if it does not create it
@@ -726,21 +724,21 @@ const updateDocs = (repository, name) => {
     }
 
     // Pull docs from the wikis
-    const filePath = path.join(content, `docs/${name.toLowerCase()}`);
+    const filePath = path.join(content, `docs/${id.toLowerCase()}`);
     git(wiki, filePath, function (err) {
         if (err) {
             console.error('An error occurred pulling ' + wiki + ' to ' + filePath)
             console.error(err);
             return;
         }
-        console.log('Updated project documentation for ' + name);
+        console.log('Updated project documentation for ' + id);
     });
 }
 
 // Update all project documentation
 console.log('Updating project documentation...');
-projects.filter(project => project.documentation).forEach(project => {
-    updateDocs(project.repository, project.name);
+projects.filter(project => project['documentation']).forEach(project => {
+    updateDocs(project['repository'], project['id']);
 });
 
 // Cache the project stats
