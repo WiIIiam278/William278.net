@@ -24,11 +24,11 @@ window.onload = () => {
 
         document.getElementById("transcript-metadata").innerHTML = formattedMeta;
 
-        // Handle broken images
+        // Handle broken assets
         let images = document.getElementsByTagName('img');
         for (let i = 0; i < images.length; i++) {
             images[i].onerror = function () {
-                this.src = '/images/missing-image.png';
+                this.src = '/assets/missing-image.png';
                 this.alt = 'Missing image';
             }
         }

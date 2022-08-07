@@ -13,7 +13,7 @@
     ],
     "tagline": "A powerful, intuitive and flexible teleportation plugin",
     "documentation": true,
-    "icons": {
+    "icon": {
       "svg": "huskhomes.svg",
       "png": "huskhomes.png"
     },
@@ -34,7 +34,7 @@
     ],
     "tagline": "A modern, cross-server player data synchronisation system",
     "documentation": true,
-    "icons": {
+    "icon": {
       "svg": "husksync.svg",
       "png": "husksync.png"
     },
@@ -55,9 +55,17 @@
     ],
     "tagline": "A super intuitive and cross-server compatible Towny-style protection",
     "documentation": true,
-    "icons": {
+    "icon": {
       "svg": "husktowns.svg",
       "png": "husktowns.png"
+    },
+    "assets": {
+      "videos": [
+        {
+          "url": "https://www.youtube.com/watch?v=YnnprTNczeY",
+          "description": "HuskTowns intruduction video"
+        }
+      ]
     },
     "license": "Premium"
   },
@@ -75,7 +83,7 @@
     ],
     "tagline": "A smart, beautiful & customisable proxy chat plugin",
     "documentation": true,
-    "icons": {
+    "icon": {
       "svg": "huskchat.svg",
       "png": "huskchat.png"
     },
@@ -94,9 +102,21 @@
       "spigot"
     ],
     "tagline": "Provide users with a simple web interface for uploading schematics",
-    "icons": {
+    "icon": {
       "svg": "schematicupload.svg",
       "png": "schematicupload.png"
+    },
+    "assets": {
+      "images": [
+        {
+          "url": "schematicupload/in-game-command.png",
+          "description": "The in-game command provided by SchematicUpload"
+        },
+        {
+          "url": "schematicupload/web-interface.png",
+          "description": "The web interface of SchematicUpload"
+        }
+      ]
     },
     "license": "Apache-2.0"
   },
@@ -113,7 +133,7 @@
       "spigot"
     ],
     "tagline": "Show your HuskHomes homes in an easy-to-use GUI menu",
-    "icons": {
+    "icon": {
       "svg": "huskhomesgui.svg",
       "png": "huskhomesgui.png"
     },
@@ -131,7 +151,7 @@
       "spigot"
     ],
     "tagline": "A random teleport system that works cross-server. Requires HuskHomes",
-    "icons": {
+    "icon": {
       "svg": "huskbungeertp.svg",
       "png": "huskbungeertp.png"
     },
@@ -150,7 +170,7 @@
       "spigot"
     ],
     "tagline": "A simple and fast plugin that lets you search text of nearby signs",
-    "icons": {
+    "icon": {
       "svg": "signsearch.svg",
       "png": "signsearch.png"
     },
@@ -162,15 +182,43 @@
     "tags": [
       "server"
     ],
-    "tagline": "(2020-2022) A SMP Minecraft server with custom battle minigames",
+    "tagline": "A Minecraft Survival Multiplayer server with custom battle minigames (2020-2022)",
     "readme": "/timetobattle",
-    "icons": {
+    "icon": {
       "svg": "timetobattle.svg",
       "png": "timetobattle.png"
+    },
+    "assets": {
+      "images": [
+        {
+          "url": "timetobattle/altenberg-castle.png",
+          "description": "Altenberg Castle"
+        },
+        {
+          "url": "timetobattle/spawn.png",
+          "description": "The survival spawn area"
+        },
+        {
+          "url": "timetobattle/battle-bastion.png",
+          "description": "The Battle Bastion"
+        },
+        {
+          "url": "timetobattle/harrenhall.png",
+          "description": "Harrenhall, by me"
+        },
+        {
+          "url": "timetobattle/hub.png",
+          "description": "The network hub"
+        },
+        {
+          "url": "timetobattle/sphere-battles.png",
+          "description": "The Sphere Battles minigame"
+        }
+      ]
     }
   },
   {
-    "id": "loaded_dice",
+    "id": "loaded-dice",
     "name": "Loaded Dice",
     "tags": [
       "game"
@@ -179,23 +227,73 @@
     "ids": {
       "itch": "https://william278.itch.io/loaded-dice"
     },
-    "readme": "/loadeddice",
-    "icons": {
+    "readme": "/loaded-dice",
+    "icon": {
       "png": "loaded-dice.png"
+    },
+    "assets": {
+      "images": [
+        {
+          "url": "loaded-dice/gameplay-4.png",
+          "description": "Loaded Dice gameplay showing the starting area"
+        },
+        {
+          "url": "loaded-dice/gameplay-1.png",
+          "description": "Loaded Dice gameplay showing a spike challenge"
+        },
+        {
+          "url": "loaded-dice/gameplay-2.png",
+          "description": "Loaded Dice gameplay showing a fire challenge"
+        },
+        {
+          "url": "loaded-dice/gameplay-3.png",
+          "description": "Loaded Dice gameplay showing a moving fire challenge"
+        },
+        {
+          "url": "loaded-dice/gameplay-5.png",
+          "description": "Loaded Dice gameplay showing a timing/spike challenge"
+        }
+      ]
     }
   },
   {
-    "id": "bcsds",
+    "id": "better-call-saul-ds",
     "name": "Better Call Saul DS",
     "repository": "https://github.com/WiIIiam278/BCSDS",
     "tags": [
       "game"
     ],
     "tagline": "Better Call Saul for the Nintendo DS, based on the popular show. Written in NFLib, libnds and C++",
-    "icons": {
+    "icon": {
       "png": "bcsds.png"
     },
-    "license": "Apache-2.0"
+    "license": "Apache-2.0",
+    "assets": {
+      "images": [
+        {
+          "url": "better-call-saul-ds/cover-with-title.jpg",
+          "description": "Game cover with title screen"
+        },
+        {
+          "url": "better-call-saul-ds/ds-foreground-cover.jpg",
+          "description": "DS in front of the cover on the title screen"
+        },
+        {
+          "url": "better-call-saul-ds/gameplay-screen-ds.jpg",
+          "description": "Close-up of gameplay on the DS screen"
+        },
+        {
+          "url": "better-call-saul-ds/reverse-cover-with-gameplay.jpg",
+          "description": "Reverse cover with gameplay on the DS screen"
+        }
+      ],
+      "videos": [
+        {
+          "url": "https://www.youtube.com/watch?v=io08u1cYmsM",
+          "description": "Gameplay video on a DS"
+        }
+      ]
+    }
   },
   {
     "id": "mineget",

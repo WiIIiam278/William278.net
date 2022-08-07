@@ -1,0 +1,106 @@
+//- Template for a readme page populated with markdown content
+extends template
+
+append styles
+    link(rel='stylesheet' href='/prism.css')
+
+append scripts
+    script(type='application/ld+json')
+        | {"@context":"https://schema.org", "@type":"Product", "name":"#{project.name}", "sku":"#{project.id}",
+        - if (project.assets && project.assets.images)
+            | "image": [
+            - let index = 0;
+            each image in project.assets.images
+                |  "#{domain}/assets/#{image.url}"
+                - index++;
+                - if (index < project.assets.images.length)
+                    | ,
+            | ],
+        | "description": "#{project.description}", "brand": {"@type":"Brand", "name":"William278.net"},
+        - if (project.stats)
+            - if (project.stats.raw)
+                | "aggregateRating": {"@type":"AggregateRating", "ratingValue":"#{project.stats.raw.average_rating.toFixed(1)}", "reviewCount":"#{project.stats.raw.rating_count}"},
+        | "offers": {"@type":"Offer", "url":"#{domain}/#{path}", "price":"#{project.stats.raw.lowest_price}", "priceCurrency":"GBP", "availability": "https://schema.org/InStock"}
+        | }
+
+block content
+    div(id='two-column-page' class='reversed-sidebar')
+        div(id='project-page-right-column')
+            div(id='project-infobox')
+                - if (project.assets)
+                    script(src='/infobox-gallery.js')
+                    - let items = 0;
+                    div(id='infobox-gallery' class='infobox-assets')
+                        - if (project.assets.videos)
+                            each video in project.assets.videos
+                                iframe(class='gallery-item infobox-video' + (!(items === 0) ? ' inactive' : '') width='560' height='315' src=`${video.url.replace('https://www.youtube.com/watch?v=', 'https://www.youtube.com/embed/')}` title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture' allowfullscreen)
+                                - items++;
+                        - if (project.assets.images)
+                            each image in project.assets.images
+                                img(class='gallery-item infobox-image' + (!(items === 0) ? ' inactive' : '') src=`/assets/${image.url}` alt=`${image.description ? image.description : ''}`)
+                                - items++;
+                    - if (items > 1)
+                        span(id='infobox-gallery-controls')
+                            a(id='infobox-gallery-prev' class='infobox-gallery-control' title='Previous image')
+                                i(class='fa-solid fa-chevron-left')
+                            a(id='infobox-gallery-next' class='infobox-gallery-control' title='Next image')
+                                i(class='fa-solid fa-chevron-right')
+                div(class='project-header infobox-header')
+                    div(class='project-details')
+                        h2(class='project-title') #{project.name}
+                        div(class='project-pills')
+                            - if (project.pills)
+                                each pill in project.pills
+                                    span(class='project-pill') #{pill}
+                    - if (project.icon)
+                        - if (project.icon.type === 'svg')
+                            object(class='project-image' data=project.icon.url type='image/svg+xml')
+                        - else
+                            img(class='project-image' src=project.icon.url alt='Project icon')
+                p #{project['description']}
+                div(class='infobox-buttons')
+                    - if (project.buttons)
+                        each button in project.buttons
+                            a(class='button-link' href=button.link)
+                                i(class=button.class)
+                                span #{button.name}
+                div(class='infobox-stats')
+                    - if (project.stats && project.stats.formatted)
+                        - let downloadStat = project.stats.formatted.find(stat => stat.id === 'total_downloads');
+                        - if (downloadStat)
+                            div(class='infobox-stat-tile')
+                                span(class='infobox-stat-name')
+                                    i(class=downloadStat.icon)
+                                    span Downloads
+                                span(class='infobox-stat-content') #{downloadStat.text}
+                        - let ratingStat = project.stats.formatted.find(stat => stat.id === 'average_rating');
+                        - if (ratingStat)
+                            div(class='infobox-stat-tile')
+                                span(class='infobox-stat-name')
+                                    i(class=ratingStat.icon)
+                                    span Rating
+                                - let rating = parseFloat(ratingStat.text);
+                                - if (rating)
+                                    - let ratingPercentage = (rating / 5) * 100;
+                                    span(class='infobox-rating-stars' style=`background: linear-gradient(90deg, rgba(255,247,72,1) ${ratingPercentage}%, rgba(37,37,37,1) ${ratingPercentage}%); -webkit-text-fill-color: transparent; -webkit-background-clip: text;`)
+                                        - for (let i = 1; i <= 5; i++)
+                                            i(class='fa-solid fa-star')
+                        - let versionStat = project.stats.formatted.find(stat => stat['id'] === 'latest_version');
+                        - if (versionStat)
+                            div(class='infobox-stat-tile')
+                                span(class='infobox-stat-name')
+                                    i(class=versionStat.icon)
+                                    span Version
+                                span(class='infobox-stat-content') #{versionStat.text}
+                        - if (project.stats.raw)
+                            - if (project.stats.raw.last_updated)
+                                div(class='infobox-stat-tile')
+                                    span(class='infobox-stat-name')
+                                        i(class='fa-solid fa-calendar-alt')
+                                        span Last Update
+                                    span(class='infobox-stat-content') #{new Date(project.stats.raw.last_updated * 1000).toDateString()}
+        div(id='project-page-left-column')
+            div(id='page-breadcrumbs')
+                a(href='/') Projects
+                span(class='item-divider') /
+            div !{markdown}

@@ -1,6 +1,6 @@
-<h1 style="text-align: center">Loaded Dice</h1>
+# Loaded Dice
 
-<iframe src="https://itch.io/embed/1622262" width="552" height="167" frameborder="0"><a href="https://wiiiiam278.itch.io/loaded-dice">
+<iframe src="https://itch.io/embed/1622262" width="500px" height="150px" frameborder="0"><a href="https://wiiiiam278.itch.io/loaded-dice">
 Loaded Dice by William278</a></iframe>
 
 _"Play as a bloke who lives inside a die."_

@@ -1,4 +1,4 @@
-<h1 style="text-align: center">Time to Battle archive</h1>
+# Time to Battle archive
 
 TimeToBattle.net was my public-access Minecraft server I ran for just under two years, between August 2020 and June 2022. The server launched to the public after a period of closed testing on August 9, 2020, and was live-streamed through my [Twitch channel](https://twitch.tv/william278). The server ended operations on June 1, 2022. You can still join TimeToBattle's [archived discord server here](https://discord.gg/xceEsXC).
 
@@ -14,33 +14,25 @@ Additionally, online leaderboards were available through the server website, det
 
 ## Gallery
 ### Survival
-![Survival spawn](images/ttb/spawn.png)![Altenberg Castle, by Maltrug](images/ttb/altenberg_castle.png)![Valhalla by DangerousLake56](images/ttb/valhalla.png)![Xuhan Jei by LagZa](images/ttb/xuhan_jei_lagza.png)![YZIFY's Keep](images/ttb/yzify_keep.png)![Great Deku, by Sir_BEANS](images/ttb/great_deku.png)![Harrenhall, by me!](images/ttb/harrenhall.png)
+![Survival spawn](/assets/timetobattle/spawn.png)![Altenberg Castle, by Maltrug](/assets/timetobattle/altenberg-castle.png)![Valhalla by DangerousLake56](/assets/timetobattle/valhalla.png)![Xuhan Jei by LagZa](/assets/timetobattle/xuhan-jei-lagza.png)![YZIFY's Keep](/assets/timetobattle/yzify-keep.png)![Great Deku, by Sir_BEANS](/assets/timetobattle/great-deku.png)![Harrenhall, by me!](/assets/timetobattle/harrenhall.png)
 
 ### The Battle Bastion
-![The entrance to the Battle Bastion dungeon](images/ttb/battle_bastion.png)
+![The entrance to the Battle Bastion dungeon](/assets/timetobattle/battle-bastion.png)
 
 Players would walk up to the entrance to start their quest in the Bastion. Behind this picture is the exit back to the Survival world (or players could use the /survival command)
 
 ### The Hub
-![The server hub](images/ttb/hub.png)
+![The server hub](/assets/timetobattle/hub.png)
 
 This is the second iteration of the Hub server - based on a clockwork design. Parkour, as well as an Elytra rings challenge were available and the top 10 best times were displayed on the server website.
 
 ### Battle Royale
-![Screenshot of the Battle Royale map](images/ttb/battle_royale.png)
+![Screenshot of the Battle Royale map](/assets/timetobattle/battle-royale.png)
 
 ### Sphere Battles
-!["The Overworld" Sphere Battles map](images/ttb/sphere_battles.png)!["The End" Sphere Battles map](images/ttb/sphere_battles_end.png)!["Glass" Sphere Battles map](images/ttb/sphere_battles_glass.png)![The "Jungle" Battles map](images/ttb/sphere_battles_jungle.png)!["Nether" Sphere Battles map](images/ttb/sphere_battles_nether.png)
+!["The Overworld" Sphere Battles map](/assets/timetobattle/sphere-battles.png)!["The End" Sphere Battles map](/assets/timetobattle/sphere-battles-end.png)!["Glass" Sphere Battles map](/assets/timetobattle/sphere-battles-glass.png)![The "Jungle" Battles map](/assets/timetobattle/sphere-battles-jungle.png)!["Nether" Sphere Battles map](/assets/timetobattle/sphere-battles-nether.png)
 
 A few more Sphere Battles maps aren't pictured here.
-
-## Downloads
-You will need to make use of an archive utility such as 7-Zip to extract these.
-* [Full Survival world (41.7GB)](/download/ttb-survival.tar.gz)
-  * Includes the Overworld, End & Nether dimensions.
-* [Full Creative plot world (22.7MB)](/download/ttb-creative.gz)
-
-_More coming, including the Hub and open source Minigame plugins... eventually!_
 
 ## The Cutting Room Floor
 A few things planned for Time to Battle never came to fruition. If you're interested, have a read.

@@ -5,7 +5,7 @@
     "icon": "fa-brands fa-github"
   },
   "spigot": {
-    "name": "GitHub",
+    "name": "SpigotMC",
     "url": "https://spigotmc.org/resources/{id}",
     "icon": "fa-solid fa-faucet"
   },
@@ -15,7 +15,7 @@
     "icon": "fa-solid fa-p"
   },
   "songoda": {
-    "name": "Songoda Marketplace",
+    "name": "Songoda",
     "url": "https://songoda.com/marketplace/product/{id}",
     "icon": "fa-solid fa-shield-halved"
   },

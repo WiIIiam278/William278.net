@@ -5,22 +5,26 @@ append scripts
     script(src='/projects-grid.js')
 
 block content
-    div(id='main-page-two-column')
+    div(id='two-column-page')
         div(id='main-page-left-column')
-            h2 My projects
+            h1 My projects
             div(id='project-box-grid')
-                - for (var project of projects)
+                each project in projects
                     div(class='project-box')
                         div(class='project-header')
                             div(class='project-details')
-                                h3(class='project-title') #{project.name}
+                                - if (project.project_page)
+                                    a(href=project.project_page title=`View information about ${project.name}`)
+                                        h3(class='project-title') #{project.name}
+                                - else
+                                    h3(class='project-title') #{project.name}
                                 div(class='project-pills')
                                     - if (project.pills)
-                                        - for (var pill of project.pills)
+                                        each pill in project.pills
                                             span(class='project-pill') #{pill}
                             - if (project.icon)
-                                - if (project.buttons && project.buttons.length > 0)
-                                    a(href=project.buttons[0]['link'] title='View project on ' + project.buttons[0]['id'] class='project-image')
+                                - if (project.project_page)
+                                    a(href=project.project_page title=`View information about ${project.name}` class='project-image')
                                         - if (project.icon.type === 'svg')
                                             object(class='project-image' data=project.icon.url type='image/svg+xml')
                                         - else
@@ -34,13 +38,13 @@ block content
                             div(class='project-description')
                                 p(class='project-tagline') #{project.description}
                                 div(class='project-buttons')
-                                    - for (var button of project.buttons)
+                                    each button in project.buttons
                                         a(href=button.link class='project-button ' + button.class target='_blank' title='View project on ' + button.id)
-                                    - for (var link of project.links)
+                                    each link in project.links
                                         a(href=link.link class='project-button button-link' title='View project ' + link.id) #{link.text}
                             div(class='project-stats')
-                                - if (project.stats)
-                                    - for (var stat of project.stats)
+                                - if (project.stats && project.stats.formatted)
+                                    each stat in project.stats.formatted
                                         span(class='project-stat')
                                             i(class=stat.icon)
                                             span #{stat.text}
@@ -52,11 +56,11 @@ block content
 
         div(id='main-page-right-column')
             a(href='https://twitter.com/William27528')
-                img(src='/images/icons/williamhead.png' id='main-page-head-icon' alt='The William278 head icon')
+                img(src='/assets/icons/williamhead.png' id='main-page-head-icon' alt='The William278 head icon')
 
-            h2 William278.net
+            h1 William278.net
             p(id='main-page-tagline') Open source Minecraft server software & game projects.
-            p This site contains easily-accessible documentation and information all about my various projects.
+            p This site contains easily-accessible documentation and information all about my constious projects.
                 span &#32;
                 | Additionally, I provide human support for my Minecraft plugins through the HuskHelp discord.
             br

@@ -4,11 +4,14 @@ doctype html
 html(lang='en')
     head
         title #{title}
-        meta(name='description', content=description)
+        meta(name='description', content=`${description}`)
 
         block styles
             link(rel='stylesheet', href='/style.css')
             link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Nunito:200,300,regular,500,600,700,800,900,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic')
+            link(href='/fontawesome-free/css/fontawesome.css' rel='stylesheet')
+            link(href='/fontawesome-free/css/brands.css' rel='stylesheet')
+            link(href='/fontawesome-free/css/solid.css' rel='stylesheet')
 
         block meta
             //- Charset and viewport
@@ -16,22 +19,41 @@ html(lang='en')
             meta(name='viewport', content='width=device-width, initial-scale=1')
 
             //- Favicons
-            link(rel='apple-touch-icon', sizes='180x180', href='/images/icons/favicons/apple-touch-icon.png')
-            link(rel='icon', type='image/png', sizes='32x32', href='/images/icons/favicons/favicon-32x32.png')
-            link(rel='icon', type='image/png', sizes='16x16', href='/images/icons/favicons/favicon-16x16.png')
+            link(rel='apple-touch-icon', sizes='180x180', href='/assets/icons/favicons/apple-touch-icon.png')
+            link(rel='icon', type='image/png', sizes='32x32', href='/assets/icons/favicons/favicon-32x32.png')
+            link(rel='icon', type='image/png', sizes='16x16', href='/assets/icons/favicons/favicon-16x16.png')
             link(rel='manifest', href='/site.webmanifest')
-            link(rel='mask-icon', href='/images/icons/favicons/safari-pinned-tab.svg', color='#142b42')
-            link(rel='shortcut icon', href='/images/icons/favicons/favicon.ico')
+            link(rel='mask-icon', href='/assets/icons/favicons/safari-pinned-tab.svg', color='#142b42')
+            link(rel='shortcut icon', href='/assets/icons/favicons/favicon.ico')
 
             //- Platform icon configuration
             meta(name='msapplication-TileColor', content='#142b42')
             meta(name='msapplication-config', content='/browserconfig.xml')
-            meta(name='theme-color', content='#142b42')
+            meta(name='theme-color', content='#00fb9a')
+
+            //- Social media cards and icons
+            meta(name='twitter:card', content='summary')
+            meta(name='twitter:title', content=`${name}`)
+            meta(name='twitter:description', content=`${description}`)
+            meta(name='twitter:image', content='/assets/icons/huskhelp.png')
+            meta(name='twitter:image:alt', content='William278.net icon')
+            meta(name='twitter:site', content='@William27528')
+
+            meta(name='og:title', content=`${name}`)
+            meta(name='og:description', content=`${description}`)
+            meta(name='og:type', content='product')
+            meta(name='og:site_name', content=`William278.net - ${tagline}`)
+            meta(name='og:url', content=`${domain}/${path}`)
 
         block scripts
             script(src='//code.jquery.com/jquery-1.10.2.js')
-            script(src='https://kit.fontawesome.com/aa4c023dda.js', crossorigin='anonymous')
-            script(type='application/ld+json') !{breadcrumbs}
+            script(type='application/ld+json')
+                | {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+                - let index = 1;
+                each page in path.split('/')
+                    | {"@type":"ListItem","position":#{index},"item":{"@id":"#{page}","name":"#{page ? page[0].toUpperCase() + page.slice(1).replace(/-/g, ' ') : 'Home'}"}},
+                    - index++;
+                | ]}
             script(type='application/ld+json') !{organization}
 
 

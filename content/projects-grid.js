@@ -28,9 +28,9 @@ const setGridItems = () => {
     let projectBoxes = document.getElementsByClassName('project-box');
     for (let i = 0; i < projectBoxes.length; i++) {
         if (i > gridLimit - 1) {
-            projectBoxes[i].style.display = 'none';
+            projectBoxes[i].classList.add('inactive');
         } else {
-            projectBoxes[i].style.display = 'flex';
+            projectBoxes[i].classList.remove('inactive');
         }
     }
 }

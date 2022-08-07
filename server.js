@@ -14,7 +14,7 @@ const {createGzip} = require('zlib')
 // GitHub flavoured Markdown parsing
 const MarkdownIt = require('markdown-it');
 const markdown = new MarkdownIt({
-    html: true, xhtmlOut: true, breaks: true
+    html: true, xhtmlOut: true
 }).use(require('markdown-it-wikilinks')({
     postProcessPageName: (pageName) => {
         pageName = pageName.trim()
@@ -32,7 +32,6 @@ const app = express();
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8000;
 const domain = process.env.DOMAIN || 'https://william278.net';
-const content = path.join(__dirname, 'content');
 const projects = JSON.parse(fs.readFileSync(path.join(__dirname, 'projects.json'), 'utf8'));
 const platforms = JSON.parse(fs.readFileSync(path.join(__dirname, 'platforms.json'), 'utf8'));
 const limiter = rate({
@@ -45,8 +44,26 @@ const ORGANIZATION = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Organization",
     "url": domain,
-    "logo": domain + "/images/icons/huskhelp.png",
+    "logo": domain + "/assets/icons/huskhelp.png",
 });
+
+// Redirect trailing forward slashes
+app.use((req, res, next) => {
+    if (req.path.substring(-1) === '/' && req.path.length > 1) {
+        const query = req.url.slice(req.path.length)
+        const safePAge = req.path.slice(0, -1).replace(/\/+/g, '/')
+        res.redirect(301, safePAge + query)
+    } else {
+        next()
+    }
+})
+
+const content = path.join(__dirname, 'content');
+const readmes = path.join(__dirname, 'readmes');
+const fontawesome = path.join(__dirname, 'node_modules', '@fortawesome');
+app.use(express.static(content));
+app.use(express.static(fontawesome));
+
 app.set('view engine', 'pug');
 app.set('views', 'pages')
 
@@ -68,153 +85,244 @@ const version = require('child_process')
 
 // Returns a formatted stat
 const getFormattedStat = (stat, value) => {
-    let id = stat.toLowerCase();
-    let icon = '';
-    switch (id) {
-        case 'downloads': {
-            icon = 'fa-solid fa-download';
-            break;
+    stat = stat.toLowerCase();
+    switch (stat) {
+        case 'total_downloads': {
+            return {
+                id: stat,
+                icon: 'fa-solid fa-download',
+                text: parseInt(value) > 1000 ? (parseInt(value) / 1000).toFixed(1) + 'k' : parseInt(value),
+            };
         }
-        case 'rating': {
-            icon = 'fa-solid fa-star';
-            break;
+        case 'average_rating': {
+            return {
+                id: stat,
+                icon: 'fa-solid fa-star',
+                text: parseFloat(value).toFixed(1),
+            };
         }
-        case 'version': {
-            icon = 'fa-solid fa-code-branch';
-            break;
-        }
-    }
-    let text;
-    switch (id) {
-        case 'downloads': {
-            // Parse as integer and format as thousands if over 1000
-            let downloads = parseInt(value);
-            if (downloads > 1000) {
-                downloads = downloads / 1000;
-                downloads = downloads.toFixed(1) + 'k';
-            }
-            text = downloads;
-            break;
-        }
-        case 'rating': {
-            // Parse as float and round to 1 decimal place
-            let rating = parseFloat(value);
-            rating = rating.toFixed(1);
-            text = rating;
-            break;
+        case 'latest_version': {
+            return {
+                id: stat,
+                icon: 'fa-solid fa-code-branch',
+                text: value,
+            };
         }
         default: {
-            text = value;
-            break;
+            return undefined;
         }
     }
-    return {
-        'id': id,
-        'icon': icon,
-        'text': text,
+}
+
+// Returns the readme of a project
+let cachedReadmes = {};
+const getProjectReadme = (project) => {
+    let readMeFile = project['readme'];
+    if (cachedReadmes[project.id]) {
+        return new Promise((resolve) => {
+            resolve(cachedReadmes[project.id]);
+        });
     }
+    if (readMeFile && readMeFile.startsWith('/')) {
+        if (!readMeFile.endsWith('.md')) {
+            readMeFile += '.md';
+        }
+        if (fs.existsSync(path.join(readmes, readMeFile))) {
+            return new Promise((resolve) => {
+                cachedReadmes[project.id] = fs.readFileSync(path.join(readmes, readMeFile), 'utf8');
+                resolve(cachedReadmes[project.id]);
+            });
+        }
+    }
+    if (project['repository']) {
+        const repository = project['repository'];
+        // Fetch the raw readme from the repository
+        return fetch(repository + '/raw/master/README.md').then(res => {
+            if (res.status !== 200) {
+                throw new Error('Readme not found');
+            }
+            return res.text()
+        }).then(text => {
+            // Replace relative links with absolute links to raw repository equivalent
+            return text.replace(/]\((?!http)(.*?)\)/g, '](' + repository + '/raw/master/$1)');
+        }).then(readme => {
+            cachedReadmes[project.id] = readme;
+            return readme;
+        }).catch(() => {
+            return undefined;
+        });
+    }
+    return new Promise((resolve) => {
+        resolve(undefined);
+    });
+};
+
+// Returns data for a project box
+const getProjectBox = (project) => {
+    let projectData = {};
+
+    // Prepare project name and description
+    projectData['id'] = project['id'];
+    projectData['name'] = project['name'];
+    projectData['description'] = project['tagline'];
+
+    // Prepare project tags
+    if (project['tags']) {
+        projectData['pills'] = project['tags'];
+    }
+
+    // Prepare project icon
+    if (project['icon']) {
+        if (project['icon']['svg']) {
+            projectData['icon'] = {
+                'url': '/assets/icons/' + project['icon']['svg'],
+                'type': 'svg'
+            }
+        } else if (project['icon']['png']) {
+            projectData['icon'] = {
+                'url': '/assets/icons/' + project['icon']['png'],
+                'type': 'png'
+            }
+        }
+    }
+
+    // Prepare platform icons
+    projectData['buttons'] = [];
+    if (project['repository']) {
+        projectData['buttons'].push({
+            'id': 'github',
+            'name': platforms['github']['name'],
+            'class': platforms['github']['icon'],
+            'link': project['repository']
+        })
+    }
+    if (project['ids']) {
+        Object.entries(project['ids']).forEach(entry => {
+            projectData['buttons'].push({
+                'id': entry[0],
+                'name': platforms[entry[0]]['name'],
+                'class': platforms[entry[0]]['icon'],
+                'link': platforms[entry[0]]['url'].toString().replace('{id}', entry[1])
+            });
+        });
+    }
+
+    // Prepare asset assets
+    projectData.assets = project.assets;
+
+    // Prepare page links
+    projectData['links'] = [];
+    if (project['documentation']) {
+        projectData['links'].push({
+            'id': 'documentation',
+            'text': 'Docs',
+            'link': '/docs/' + project['id'],
+        })
+    }
+    if (project['readme']) {
+        projectData['links'].push({
+            'id': 'readme',
+            'text': 'About',
+            'link': '/project/' + project['id']
+        })
+    }
+
+    // Prepare project stats if this is a plugin
+    if (project['tags'] && projectStats[project['id']]) {
+        if ((project['tags']).includes('plugin')) {
+            projectData['stats'] = {};
+            projectData['stats']['raw'] = projectStats[project['id']];
+            projectData['stats']['formatted'] = [];
+            for (const stat of Object.entries(projectStats[project['id']])) {
+                let formatted = getFormattedStat(stat[0], stat[1]);
+                if (formatted) {
+                    projectData['stats']['formatted'].push(formatted);
+                }
+            }
+        }
+    }
+
+    // Set if this project has a readme
+    if (project['repository'] || project['readme']) {
+        projectData['project_page'] = '/project/' + project['id'];
+    }
+    return projectData;
 };
 
 // Prepares project box data for the homepage
-const getProjectBoxData = () => {
+const getProjectBoxes = () => {
     let projectBoxData = [];
     for (const project of projects) {
-        let projectData = {};
-
-        // Prepare project name and description
-        projectData['id'] = project['id'];
-        projectData['name'] = project['name'];
-        projectData['description'] = project['tagline'];
-
-        // Prepare project tags
-        if (project['tags']) {
-            projectData['pills'] = project['tags'];
-        }
-
-        // Prepare project icon
-        if (project['icons']) {
-            if (project['icons']['svg']) {
-                projectData['icon'] = {
-                    'url': '/images/icons/' + project['icons']['svg'],
-                    'type': 'svg'
-                }
-            } else if (project['icons']['png']) {
-                projectData['icon'] = {
-                    'url': '/images/icons/' + project['icons']['png'],
-                    'type': 'png'
-                }
-            }
-        }
-
-        // Prepare platform icons
-        projectData['buttons'] = [];
-        if (project['repository']) {
-            projectData['buttons'].push({
-                'id': 'github',
-                'class': platforms['github']['icon'],
-                'link': project['repository']
-            })
-        }
-        if (project['ids']) {
-            Object.entries(project['ids']).forEach(entry => {
-                projectData['buttons'].push({
-                    'id': entry[0],
-                    'class': platforms[entry[0]]['icon'],
-                    'link': platforms[entry[0]]['url'].toString().replace('{id}', entry[1])
-                });
-            });
-        }
-
-        // Prepare page links
-        projectData['links'] = [];
-        if (project['documentation']) {
-            projectData['links'].push({
-                'id': 'documentation',
-                'text': 'Docs',
-                'link': '/docs/' + project['id'],
-            })
-        }
-        if (project['readme']) {
-            projectData['links'].push({
-                'id': 'readme',
-                'text': 'About',
-                'link': project['readme'],
-            })
-        }
-
-        // Prepare project stats if this is a plugin
-        if (project['tags'] && projectStats[project['id']]) {
-            if ((project['tags']).includes('plugin')) {
-                projectData['stats'] = [];
-                for (const stat of Object.entries(projectStats[project['id']])) {
-                    if (stat[0] === 'name') continue; // Ignore the 'name' stat
-                    projectData['stats'].push(getFormattedStat(stat[0], stat[1]));
-                }
-            }
-        }
-
-        projectBoxData.push(projectData);
+        projectBoxData.push(getProjectBox(project));
     }
     return projectBoxData;
 };
 
+// Serve a page
+const servePage = (req, res, page, options) => {
+    const data = {
+        'organization': ORGANIZATION,
+        'version': version,
+        'domain': domain,
+        'path': req.path.slice(1),
+        'name': 'William278.net',
+        'title': 'Open source Minecraft server software & game projects - William278.net',
+        'tagline': 'Open source Minecraft server software & game projects',
+        'description': 'Easily-accessible documentation and information site for all of William278\'s Minecraft plugins, projects & games',
+    };
+    if (options) {
+        Object.assign(data, options);
+    }
+    res.render(page, data);
+}
+
 // Home page
 app.get('/', (req, res) => {
-    res.render('home', {
-        'version': version,
-        'projects': getProjectBoxData(),
-        'title': 'Open source Minecraft server software & game projects - William278.net',
-        'description': 'Easily-accessible documentation and information site for all of William278\'s Minecraft plugins, projects & games.',
-        'breadcrumbs': generateBreadcrumbs(req.url),
-        'organization': ORGANIZATION
+    servePage(req, res, 'home', {
+        'projects': getProjectBoxes()
     });
+});
+
+// Redirect /project/ to the home page
+app.get('/project', (req, res) => {
+    res.redirect('/');
+});
+
+// Terms page
+app.get('/terms', (req, res) => {
+    servePage(req, res, 'readme', {
+        'markdown': markdown.render(fs.readFileSync(path.join(readmes, 'terms.md'), 'utf8'))
+    });
+});
+
+// Project pages
+app.get('/project/:name', (req, res) => {
+    const project = projects.find(project => project['id'] === req.params.name);
+    if (!project || !(project['repository'] || project['readme'])) {
+        sendError(req, res, 404, 'Project not found');
+        return;
+    }
+    getProjectReadme(project).then(readme => {
+        if (!readme) {
+            sendError(req, res, 500, 'Server error: Unable to retrieve project README');
+            return;
+        }
+        servePage(req, res, 'project', {
+            'project': getProjectBox(project),
+            'name': `${project['name']} - William278.net`,
+            'title': `${project['tagline']} - ${project['name']} - William278.net`,
+            'description': `About ${project['name']} on William278.net - ${project['tagline']}`,
+            'markdown': markdown.render(readme)
+        });
+    });
+
 });
 
 // Handle transcripts
 app.get('/transcript', (req, res) => {
     if (!req.url.endsWith('.html')) {
         if (!fs.existsSync(req.url)) {
-            sendError(res, '404');
+            sendError(req, res, '404');
             return;
         }
         return;
@@ -224,11 +332,11 @@ app.get('/transcript', (req, res) => {
         try {
             let url = new URL(key);
             if (url.hostname !== 'cdn.discordapp.com') {
-                sendError(res, '400', 'Invalid hostname.');
+                sendError(req, res, '400', 'Invalid hostname.');
                 return;
             }
         } catch (error) {
-            sendError(res, '400', 'Invalid URL.');
+            sendError(req, res, '400', 'Invalid URL.');
             return;
         }
         fetch(key).then(response => {
@@ -245,80 +353,74 @@ app.get('/transcript', (req, res) => {
                 .replace("</html>", "")
                 .replace("<!DOCTYPE html>", "");
         }).then(html => {
-            res.render('transcript', {
-                'version': version,
+            servePage(req, res, 'transcript', {
                 'transcript': html,
+                'name': `View Transcript - William278.net`,
                 'title': `View HuskHelp Support Ticket Transcript (${key.split('/').pop()}) - William278.net`,
-                'description': `Read a transcript of this HuskHelp Discord support ticket (${key.split('/').pop()}), including messages and attatchments`,
-                'breadcrumbs': generateBreadcrumbs(req.url),
-                'organization': ORGANIZATION
+                'description': `Read a transcript of this HuskHelp Discord support ticket (${key.split('/').pop()}), including messages and attachments`
             });
         }).catch(code => {
-            sendError(res, code, 'That transcript is invalid or has expired.');
+            sendError(req, res, code, 'That transcript is invalid or has expired.');
         });
         return;
     }
-    sendError(res, '400', 'Bad request.');
+    sendError(req, res, '400', 'Bad request.');
 });
 
 // Serve the documentation index
 app.get('/docs', (req, res) => {
-    return res.render('docs-index', {
-        'version': version,
+    servePage(req, res, 'docs-index', {
+        'name': 'Documentation - William278.net',
         'title': 'Documentation for HuskHomes, HuskSync & more - William278.net',
         'description': 'Documentation for William278\'s various projects, including HuskHomes, HuskSync, HuskTowns & HuskChat.',
-        'breadcrumbs': generateBreadcrumbs(req.url),
-        'organization': ORGANIZATION
     });
 });
 
 // Serve documentation pages
-app.get(['/docs/:name/(:page)?', '/docs/:name'], (req, res) => {
-    // If the request ends with a forward slash, redirect to the same page without the forward slash
-    if (req.url.endsWith('/')) {
-        res.redirect(req.url.slice(0, -1));
+app.get('/docs/:name/(:page)?', (req, res) => {
+    // Get the project name and page specified
+    let projectName = (req.params['name']);
+    if (!projectName || projectName === '') {
+        sendError(req, res, '404', 'Project not found');
         return;
     }
+    projectName = projectName.toLowerCase();
 
-    // Serve page with markdown
-    let name = req.params.name.toLowerCase();
-    if (!req.params.page) {
-        res.redirect(`/docs/${name}/Home`);
+    let pageName = (req.params['page'])
+    if (!pageName || pageName === '') {
+        res.redirect(`/docs/${projectName}/Home`);
         return;
     }
-    let page = req.params.page;
 
     // Find project with documentation by name
-    let project = projects.find(project => project.name.toLowerCase() === name);
+    let project = projects.find(project => project.name.toLowerCase() === projectName);
     if (!project) {
-        sendError(res, '404', 'Invalid project.');
+        sendError(req, res, '404', 'Invalid project.');
         return;
     }
     if (!project.documentation) {
-        sendError(res, '404', 'There are no documentation pages for this project.');
+        sendError(req, res, '404', 'There are no documentation pages for this project.');
         return;
     }
 
     // Send the page
-    let pagePath = path.join(content, `docs/${name.toLowerCase()}/${page}.md`);
+    let pagePath = path.join(content, `docs/${projectName.toLowerCase()}/${pageName}.md`);
     if (fs.existsSync(pagePath)) {
-        let sidebarPath = path.join(content, `docs/${name.toLowerCase()}/_Sidebar.md`);
+        let sidebarPath = path.join(content, `docs/${projectName.toLowerCase()}/_Sidebar.md`);
         if (fs.existsSync(sidebarPath)) {
-            let pageTitle = page.replace(/-/g, ' ');
-            res.render('docs', {
-                'version': version,
+            let pageTitle = pageName.replace(/-/g, ' ');
+            servePage(req, res, 'docs', {
                 'projectName': project.name,
                 'pageName': pageTitle,
+                'name': `${project.name} Docs - ${pageTitle} -  William278.net`,
                 'navigation': markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
                 'markdown': markdown.render(fs.readFileSync(pagePath, 'utf8')),
-                'title': `Documentation for ${project.name} - ${pageTitle} - William278.net`,
-                'description': `Read the documentation for ${project.name} by William278 - ${pageTitle} ${project.tags ? `(${project.tags.join(', ')})` : ''}`,
-                'breadcrumbs': generateBreadcrumbs(req.url),
-                'organization': ORGANIZATION
+                'title': `${project.name} Documentation - ${pageTitle} - William278.net`,
+                'description': `Documentation for ${project.name} - ${pageTitle} - ${project['tagline']}`,
             });
         }
     } else {
-        sendError(res, '404', 'Documentation page not found.');
+        sendError(req, res, '404', 'Documentation page not found.');
     }
 });
 
@@ -475,13 +577,8 @@ const getProjectStats = async () => {
     for (const project of projects) {
         if (!project.tags) continue;
         if (!project.tags.includes('plugin')) continue;
-        if (project.ids) {
-            stats[project.id] = {
-                'name': project.name,
-                'downloads': (await mineget.downloads(project.ids))['total_downloads'],
-                'rating': (await mineget.rating(project.ids))['average_rating'],
-                'version': (await mineget.latest_version(project.ids))['latest_version'],
-            };
+        if (project['ids']) {
+            stats[project.id] = await mineget.get(project['ids']);
         }
     }
     return stats;
@@ -540,7 +637,7 @@ app.get('/sitemap.xml', (req, res) => {
             lastmod: new Date().toISOString(),
             priority: 1,
             img: {
-                url: '/images/icons/williamhead.png'
+                url: '/assets/icons/williamhead.png'
             }
         });
         sitemapStream.write({
@@ -552,18 +649,18 @@ app.get('/sitemap.xml', (req, res) => {
 
         // Iterate through every .md file in the content/docs directory and subdirectories
         for (const project of projects) {
-            if (project.repository && project.documentation) {
+            if (project['repository'] && project['documentation']) {
                 for (const page of fs.readdirSync(path.join(content, `docs/${project.id}`))) {
                     if (page.endsWith('.md') && !page.startsWith('_') && page !== 'Home.md') {
                         let pageName = page.slice(0, -3);
-                        if (project.icons && project.icons.png) {
+                        if (project['icon'] && project['icon']['png']) {
                             sitemapStream.write({
                                 url: `/docs/${project.id}/${pageName}`,
                                 changefreq: 'daily',
                                 lastmod: fs.statSync(path.join(content, `docs/${project.id}/${page}`)).mtime.toISOString(),
                                 priority: 0.8,
                                 img: {
-                                    url: `/images/icons/${project.icons.png}`
+                                    url: `/assets/icons/${project.icon.png}`
                                 }
                             });
                         } else {
@@ -577,29 +674,23 @@ app.get('/sitemap.xml', (req, res) => {
                     }
                 }
             }
-            if (project.readme) {
-                if (project.readme.startsWith('/')) {
-                    if (fs.existsSync(path.join(content, `${project.readme}.md`))) {
 
-                        if (project.icons && project.icons.png) {
-                            sitemapStream.write({
-                                url: project.readme,
-                                changefreq: 'daily',
-                                lastmod: fs.statSync(path.join(content, `${project.readme}.md`)).mtime.toISOString(),
-                                priority: 0.9,
-                                img: {
-                                    url: `/images/icons/${project.icons.png}`,
-                                }
-                            });
-                        } else {
-                            sitemapStream.write({
-                                url: project.readme,
-                                changefreq: 'daily',
-                                lastmod: fs.statSync(path.join(content, `${project.readme}.md`)).mtime.toISOString(),
-                                priority: 0.9
-                            });
+            if (project.readme || project.repository) {
+                if (project['icon'] && project['icon']['png']) {
+                    sitemapStream.write({
+                        url: `/project/${project.id}`,
+                        changefreq: 'daily',
+                        priority: 0.9,
+                        img: {
+                            url: `/assets/icons/${project['icon']['png']}`,
                         }
-                    }
+                    });
+                } else {
+                    sitemapStream.write({
+                        url: `/project/${project.id}`,
+                        changefreq: 'daily',
+                        priority: 0.9
+                    });
                 }
             }
         }
@@ -619,100 +710,22 @@ app.get('/robots.txt', (req, res) => {
     res.send();
 });
 
-
 // Handle all other page requests
-app.get('*', (req, res) => {
-    let fullUrl = path.join(content, req.url);
-    let urlModifiers = '';
-
-    // If the request ends with a forward slash, redirect to the same page without the forward slash
-    if (req.url.endsWith('/')) {
-        res.redirect(req.url.slice(0, -1));
-        return;
-    }
-
-    // If the file doesn't exist, serve the 404 page
-    if (!fs.existsSync(fullUrl)) {
-        if (!fs.existsSync(fullUrl + '.md')) {
-            sendError(res, '404');
-            return;
-        } else {
-            urlModifiers = '.md';
-        }
-    }
-
-    // If the file is a .md (Markdown) readme file, parse it and serve it as HTML
-    if (fullUrl.endsWith('.md') || urlModifiers === '.md') {
-        let pageName = req.url.replace(/-/g, ' ').substring(1, req.url.length);
-        res.render('readme', {
-            'version': version,
-            'name': pageName,
-            'markdown': markdown.render(fs.readFileSync(path.join(content, req.url + urlModifiers), 'utf8')),
-            'title': `${pageName.charAt(0).toUpperCase() + pageName.slice(1)} - William278.net`,
-            'description': `Easily-accessible documentation and information site for all of William278's Minecraft plugins, projects & games`,
-            'breadcrumbs': generateBreadcrumbs(req.url),
-            'organization': ORGANIZATION
-        })
-    } else {
-        res.sendFile(req.url + urlModifiers, {root: content});
-    }
+app.use((req, res) => {
+    sendError(req, res, '404');
 });
 
 
 // Display an error page with a code and description
-const sendError = (res, code, description) => {
-    res.render('error', {
-        'version': version,
+const sendError = (req, res, code, description) => {
+    servePage(req, res, 'error', {
         'code': code,
         'details': description ? description : 'Make sure you entered the correct URL.',
         'title': `Error ${code} - William278.net`,
+        'name': `Error ${code} - William278.net`,
         'description': `Error ${code} - ${description ? description : 'Make sure you entered the correct URL.'}`,
-        'breadcrumbs': generateBreadcrumbs(domain + '/error-' + code),
-        'organization': ORGANIZATION
     });
 }
-
-// Generates structured data breadcrumbs for the current page
-const BREADCRUMB_FORMAT = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    'itemListElement': []
-}
-const generateBreadcrumbs = (url) => {
-    let breadcrumbs = JSON.parse(JSON.stringify(BREADCRUMB_FORMAT));
-    let doneEndpoints = [];
-    url = url.replace('https://william278.net/', '');
-    let currentParts = '';
-    url.split('/').forEach((part, index) => {
-        currentParts += part !== '' ? part + '/' : '';
-        let pageName = part.replace(/-/g, ' ');
-        if (pageName === 'Home') {
-            return;
-        }
-        if (part === '') {
-            pageName = 'Home';
-        }
-        // if the page name matches a project name in lower case use that
-        for (const project of projects) {
-            if (project.name.toLowerCase() === pageName.toLowerCase()) {
-                pageName = project.name;
-                break;
-            }
-        }
-        if (doneEndpoints.includes(domain + '/' + currentParts)) {
-            return;
-        }
-        doneEndpoints += domain + currentParts;
-        breadcrumbs.itemListElement.push({
-            '@type': 'ListItem',
-            'position': index + 1,
-            'name': pageName.charAt(0).toUpperCase() + pageName.slice(1),
-            'item': domain + '/' + currentParts
-        });
-    });
-    return JSON.stringify(breadcrumbs);
-}
-
 
 // Updates plugin documentation
 const updateDocs = (repository, id) => {
