@@ -416,7 +416,7 @@ app.get('/docs/:name/(:page)?', (req, res) => {
                 'navigation': markdown.render(fs.readFileSync(sidebarPath, 'utf8')),
                 'markdown': markdown.render(fs.readFileSync(pagePath, 'utf8')),
                 'title': `${project.name} Documentation - ${pageTitle} - William278.net`,
-                'description': `Documentation for ${project.name} - ${pageTitle} - ${project['tagline']}`,
+                'description': `Documentation for ${project.name} - ${project['tagline']} - ${pageTitle}`,
             });
         }
     } else {

@@ -17,10 +17,14 @@ append scripts
                     | ,
             | ],
         | "description": "#{project.description}", "brand": {"@type":"Brand", "name":"William278.net"},
-        - if (project.stats)
-            - if (project.stats.raw)
-                | "aggregateRating": {"@type":"AggregateRating", "ratingValue":"#{project.stats.raw.average_rating.toFixed(1)}", "reviewCount":"#{project.stats.raw.rating_count}"},
-        | "offers": {"@type":"Offer", "url":"#{domain}/#{path}", "price":"#{project.stats.raw.lowest_price}", "priceCurrency":"GBP", "availability": "https://schema.org/InStock"}
+        - if (project.stats && project.stats.raw)
+            | "aggregateRating": {"@type":"AggregateRating", "ratingValue":"#{project.stats.raw.average_rating.toFixed(1)}", "reviewCount":"#{project.stats.raw.rating_count}"},
+        | "offers": {"@type":"Offer", "url":"#{domain}/#{path}",
+        - if (project.stats && project.stats.raw)
+            | "price":"#{project.stats.raw.lowest_price}",
+        - else
+            | "price":"0",
+        | "priceCurrency":"GBP", "availability": "https://schema.org/InStock"}
         | }
 
 block content
