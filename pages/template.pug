@@ -49,9 +49,11 @@ html(lang='en')
             script(src='//code.jquery.com/jquery-1.10.2.js')
             script(type='application/ld+json')
                 | {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
-                - let index = 1;
+                - let index = 0;
                 each page in path.split('/')
-                    | {"@type":"ListItem","position":#{index},"item":{"@id":"#{page}","name":"#{page ? page[0].toUpperCase() + page.slice(1).replace(/-/g, ' ') : 'Home'}"}},
+                    | {"@type":"ListItem","position":#{(index+1)},"item":{"@id":"#{page}","name":"#{page ? page[0].toUpperCase() + page.slice(1).replace(/-/g, ' ') : 'Home'}"}}
+                    - if (index+1 < path.split('/').length)
+                        | ,
                     - index++;
                 | ]}
             script(type='application/ld+json') !{organization}
