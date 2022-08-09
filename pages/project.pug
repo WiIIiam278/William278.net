@@ -6,25 +6,18 @@ append styles
 
 append scripts
     script(type='application/ld+json')
-        | {"@context":"https://schema.org", "@type":"Product", "name":"#{project.name}", "sku":"#{project.id}",
-        - if (project.assets && project.assets.images)
-            | "image": [
-            - let index = 0;
-            each image in project.assets.images
-                |  "#{domain}/assets/#{image.url}"
-                - index++;
-                - if (index < project.assets.images.length)
-                    | ,
-            | ],
-        | "description": "#{project.description}", "brand": {"@type":"Brand", "name":"William278.net"},
+        | {"@context": "https://schema.org", "@type": "Product", "name": "#{project.name}", "sku": "#{project.id}", "mpn": "#{project.id}",
+        - if (project.icons && project.icons['png'])
+            | "image": "#{project.icons['png']}",
+        | "description": "#{project.description}", "brand": {"@type": "Brand", "name": "William278"},
         - if (project.stats && project.stats.raw)
-            | "aggregateRating": {"@type":"AggregateRating", "ratingValue":"#{project.stats.raw.average_rating.toFixed(1)}", "reviewCount":"#{project.stats.raw.rating_count}"},
-        | "offers": {"@type":"Offer", "url":"#{domain}/#{path}",
+            | "aggregateRating": {"@type": "AggregateRating", "ratingValue": "#{project.stats.raw.average_rating.toFixed(1)}", "reviewCount": "#{project.stats.raw.rating_count}"},
+        | "offers": {"@type": "Offer", "url": "#{domain}/#{path}",
         - if (project.stats && project.stats.raw)
-            | "price":"#{project.stats.raw.lowest_price}",
+            | "price": "#{project.stats.raw.lowest_price}",
         - else
-            | "price":"0",
-        | "priceCurrency":"GBP", "availability": "https://schema.org/InStock"}
+            | "price": "0",
+        | "priceCurrency": "GBP", "priceValidUntil": "#{new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().substring(0, 10)}", "availability": "https://schema.org/InStock"}
         | }
 
 block content

@@ -207,8 +207,8 @@ const getProjectBox = (project) => {
         });
     }
 
-    // Prepare asset assets
     projectData.assets = project.assets;
+    projectData.icons = project.icon;
 
     // Prepare page links
     projectData['links'] = [];
