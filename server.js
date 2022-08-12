@@ -318,7 +318,75 @@ app.get('/project/:name', (req, res) => {
 
 });
 
-// Handle transcripts
+// Handle new transcripts
+app.get('/transcript/:id', (req, res) => {
+    if (!req.params.id) {
+        sendError(req, res, 404, 'No transcript ID specified');
+        return;
+    }
+
+    // Decode id base 64
+    const parsedId = Buffer.from(req.params.id, 'base64').toString('ascii');
+
+    // If ID has three parts separated by forward slashes and ends in .json, it's a valid ID
+    if (!parsedId.match(/^[0-9]{1,32}\/[0-9]{1,32}\/[a-zA-Z0-9\-_]{1,32}\.json$/)) {
+        sendError(req, res, 400, 'Invalid transcript ID ' + parsedId);
+        return;
+    }
+
+    fetch(`https://cdn.discordapp.com/attachments/${parsedId}`).then(response => {
+        if (response.status === 200) {
+            // Get the content type. If it is application.json, it's a valid transcript
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json();
+            }
+            throw new Error('Invalid content type');
+        } else if (response.status === 404) {
+            throw new Error('Could not find that transcript. It may have been deleted.');
+        }
+        throw new Error('Failed to fetch transcript');
+    }).then(json => {
+        servePage(req, res, 'transcript', {
+            'name': `View Transcript - William278.net`,
+            'title': `View HuskHelp Support Ticket Transcript - William278.net`,
+            'description': `Read a transcript of this HuskHelp Discord support ticket`,
+            'transcript': json,
+            'markdown': markdown,
+            'processor': (text) => {
+                // Get all matches of the <!user:NUMBER> tag
+                let tags = ['user', 'emote', 'role', 'channel']
+                for (const tag of tags) {
+                    const matches = text.matchAll(new RegExp(`<!${tag}:(\\d+)>`, 'g'));
+                    for (const match of matches) {
+                        let value = json[`${tag}s`].find(list => list['id'] === match[1]);
+                        if (value) {
+                            switch (tag) {
+                                case 'user':
+                                    text = text.replaceAll(match[0], `<span class="d-mention d-user">@${value['name']}</span>`);
+                                    break;
+                                case 'emote':
+                                    text = text.replaceAll(match[0], `<img class="d-emoji" src="${value['url']}" alt="${value['name']}">`);
+                                    break;
+                                case 'role':
+                                    text = text.replaceAll(match[0], `<span class="d-mention d-role" style="color: #${value['color']}">@${value['name']}</span>`);
+                                    break;
+                                case 'channel':
+                                    text = text.replaceAll(match[0], `<span class="d-mention d-channel">#${value['name']}</span>`);
+                                    break;
+                            }
+                        }
+                    }
+                }
+                return text;
+            }
+        });
+    }).catch(err => {
+        sendError(req, res, 400, err.message);
+    });
+});
+
+// Handle legacy transcripts
 app.get('/transcript', (req, res) => {
     if (!req.url.endsWith('.html')) {
         if (!fs.existsSync(req.url)) {
@@ -353,7 +421,7 @@ app.get('/transcript', (req, res) => {
                 .replace("</html>", "")
                 .replace("<!DOCTYPE html>", "");
         }).then(html => {
-            servePage(req, res, 'transcript', {
+            servePage(req, res, 'legacy-transcript', {
                 'transcript': html,
                 'name': `View Transcript - William278.net`,
                 'title': `View HuskHelp Support Ticket Transcript (${key.split('/').pop()}) - William278.net`,

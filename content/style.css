@@ -33,6 +33,27 @@ main {
     max-width: 1400px;
 }
 
+/* Scroll bar */
+/* Firefox */
+* {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(20, 20, 20, 0.8) rgba(20, 20, 20, 0.3);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 16px;
+}
+
+*::-webkit-scrollbar-track {
+    background: rgba(20, 20, 20, 0.3);
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(20, 20, 20, 0.8);
+    border-radius: 16px;
+}
+
 /* Horizontal rule */
 hr {
     border: 0;
@@ -444,7 +465,7 @@ code {
     border-radius: 0.5em;
 }
 
-.project-pill {
+.pill-item {
     padding: 0.2em 0.45em;
     border-radius: 0.5em;
     background-color: var(--main-gray);
@@ -764,7 +785,7 @@ code {
 }
 
 /* Docs page title */
-#docs-page-title {
+#page-title {
     margin-top: 0.3em;
 }
 

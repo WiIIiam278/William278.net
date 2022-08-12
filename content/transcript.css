@@ -1,11 +1,25 @@
 /*
  * Discord transcript page formatting
  */
+.system-message {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    color: var(--main-light-gray);
+    text-align: center;
+}
+
+.system-message i {
+    font-size: 2em;
+    margin-bottom: 0.5rem;
+}
+
 .discord-message {
     background-color: var(--main-gray);
     padding: 0.8em 0.8em 1em;
     border-radius: 0.5em;
-    margin-top: 1em;
+    margin: 1em 0;
 }
 
 .message-timestamp {
@@ -31,6 +45,40 @@
     display: inline-block;
 }
 
+.transcript-metadata {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.transcript-metadata .meta-item {
+    margin-bottom: 0.75em;
+}
+
+.transcript-metadata h1,h2,h3,h4 {
+    margin: 0.3em 0;
+    padding: 0;
+}
+
+.pill-item {
+    display: inline-block;
+    background-color: var(--main-background);
+    width: fit-content;
+    margin: 0 0.35em 0.35em 0;
+}
+
+.pill-item i {
+    margin-right: 0.3em;
+}
+
+.message-sender .pill-item {
+    display: block !important;
+    margin-left: 3.25em;
+    padding: 0;
+    background-color: transparent;
+    color: var(--main-light-gray);
+}
+
 .message-sender-numbers {
     color: var(--main-light-gray);
     font-weight: normal;
@@ -42,6 +90,20 @@
     border-radius: 100%;
     display: inline-block;
     float: left;
+}
+
+.message p {
+    margin: 0 0;
+    padding: 0 0;
+}
+
+.field-name {
+    font-weight: bold;
+}
+
+.field-value p {
+    margin: 0 0;
+    padding: 0 0;
 }
 
 .message code {
@@ -92,8 +154,12 @@
     display: inline;
 }
 
+.embed-description {
+    margin-bottom: 1em;
+}
+
 .embed-field {
-    margin: 0;
+    margin: 0.2em 0.2em 0.2em 0;
 }
 
 .inline-true {
@@ -137,6 +203,10 @@
     color: var(--accent-color);
 }
 
+.d-unknown {
+    color: var(--main-light-gray);
+}
+
 .d-channel {
     color: var(--accent-color);
 }
@@ -153,11 +223,10 @@
 
 .message-attachment {
     max-width: 400px;
-    width: 100%;
-    height: auto;
+    max-height: 225px;
     background-color: var(--main-background);
     margin-left: 3.1em;
-    border-radius: 0.25em;
+    border-radius: 0.5em;
 }
 
 .attachment-video {
@@ -172,7 +241,7 @@
 .discord-embed {
     background-color: var(--main-background);
     padding: 0.75em;
-    border-radius: 0.25em;
+    border-radius: 0.5em;
     border-left: var(--accent-color) 0.3em solid;
     display: inline-block;
     min-height: fit-content !important;
@@ -185,6 +254,7 @@
 
 .embed-title {
     font-weight: bold;
+    font-size: larger;
 }
 
 .embed-footer {

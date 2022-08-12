@@ -48,7 +48,7 @@ block content
                         div(class='project-pills')
                             - if (project.pills)
                                 each pill in project.pills
-                                    span(class='project-pill') #{pill}
+                                    span(class='pill-item') #{pill}
                     - if (project.icon)
                         - if (project.icon.type === 'svg')
                             object(class='project-image' data=project.icon.url type='image/svg+xml')
