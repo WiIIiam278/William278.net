@@ -1,7 +1,7 @@
 # [![William278.net Banner](content/assets/banner.png)](https://github.com/WiIIiam278/William278.net)
 [![Discord](https://img.shields.io/discord/818135932103557162?color=7289da&logo=discord)](https://discord.gg/tVYhJfyDWG)
 
-Source for [my website](https://william278.net), built in node/express with pug HTML rendering.
+Source for [my website](https://william278.net), built in node/express with pug templating.
 
 ## Usage
 Navigate to the root directory and run `npm start` to start the server. 
