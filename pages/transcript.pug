@@ -119,15 +119,15 @@ block main-content
                                         video(class='message-attachment' controls)
                                             source(src=attachment.url type=attachment.type)
 
-
-
-
-
-        - let messages = []
-        - let currentUser = null
+        - let messages = [];
+        - let currentUser = null;
+        - let currentTimestamp = null;
+        //- Mix-in the messages
         each message in transcript.messages
             - if (currentUser === null)
                 - currentUser = message.user
+            - if (currentTimestamp === null)
+                - currentTimestamp = message.timestamp
             - else if (currentUser !== message.sender)
                 - let sender = transcript.users.find(user => user.id === currentUser)
                 - if (sender)
@@ -141,7 +141,13 @@ block main-content
             - if (message.embeds)
                 - content.embeds = message.embeds
             - messages.push(content)
+            - currentTimestamp = message.timestamp
             - currentUser = message.sender
+
+        //- Add remaining messages
+        if (messages.length > 0 && currentUser && currentTimestamp)
+            - let sender = transcript.users.find(user => user.id === currentUser)
+            +messageBlock(sender.name, sender.disambiguator, sender.pfp, new Date(parseInt(currentTimestamp)), messages)
 
         .system-message
             i(class='fa-solid fa-lock')
