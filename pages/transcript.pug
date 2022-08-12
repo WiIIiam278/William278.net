@@ -118,6 +118,10 @@ block main-content
                                     else if (attachment.type.split('\/')[0] === 'video')
                                         video(class='message-attachment' controls)
                                             source(src=attachment.url type=attachment.type)
+                                    else
+                                        a(class='message-link' href=attachment.url download=attachment.name)
+                                            i(class='fa-solid fa-file-arrow-down')
+                                            | #{attachment.name}
 
         - let messages = [];
         - let currentUser = null;
