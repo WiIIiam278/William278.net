@@ -326,12 +326,26 @@ app.get('/transcript/:id', (req, res) => {
     }
 
     // Decode id base 64
-    const parsedId = Buffer.from(req.params.id, 'base64').toString('ascii');
+    const parsedId = Buffer.from(req.params.id, 'base64url').toString('ascii');
+
+    if (!parsedId) {
+        sendError(req, res, 400, 'Could not parse ID');
+        return;
+    }
 
     // If ID has three parts separated by forward slashes and ends in .json, it's a valid ID
     if (!parsedId.match(/^[0-9]{1,32}\/[0-9]{1,32}\/[a-zA-Z0-9\-_]{1,32}\.json$/)) {
-        sendError(req, res, 400, 'Invalid transcript ID ' + parsedId);
+        sendError(req, res, 400, 'Invalid transcript ID');
         return;
+    }
+
+    // Validate the file is from a valid channel
+    const allowedChannels = ['885981365491888211', '977649978270969906', '977663053179023380'];
+    if (parsedId.split('/')[0]) {
+        if (!allowedChannels.includes(parsedId.split('/')[0])) {
+            sendError(req, res, 403, 'Forbidden (Transcript file not from valid channel)');
+            return;
+        }
     }
 
     fetch(`https://cdn.discordapp.com/attachments/${parsedId}`).then(response => {
