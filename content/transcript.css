@@ -183,6 +183,24 @@ pre {
 }
 
 /* Emoji and inline stuff */
+.discord-tag {
+    background-color: var(--main-background);
+    padding: 0.05em 0.2em;
+    border-radius: 0.3em;
+}
+
+.user-tag {
+    color: var(--accent-color);
+}
+
+.role-tag {
+    color: var(--main-light-gray);
+}
+
+.channel-tag {
+    color: var(--accent-color);
+}
+
 .discord-emoji {
     max-width: 1.4em;
     display: inline;
