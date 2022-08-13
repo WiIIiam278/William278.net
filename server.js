@@ -363,16 +363,16 @@ app.get('/transcript/:id', (req, res) => {
                         if (value) {
                             switch (tag) {
                                 case 'user':
-                                    text = text.replaceAll(match[0], `<span class="d-mention d-user">@${value['name']}</span>`);
+                                    text = text.replaceAll(match[0], `<span class="discord-tag user-tag">@${value['name']}</span>`);
                                     break;
                                 case 'emote':
-                                    text = text.replaceAll(match[0], `<img class="d-emoji" src="${value['url']}" alt="${value['name']}">`);
+                                    text = text.replaceAll(match[0], `<img class="discord-emoji" src="${value['url']}" alt="${value['name']}">`);
                                     break;
                                 case 'role':
-                                    text = text.replaceAll(match[0], `<span class="d-mention d-role" style="color: #${value['color']}">@${value['name']}</span>`);
+                                    text = text.replaceAll(match[0], `<span class="discord-tag role-tag" style="color: #${value['color']}">@${value['name']}</span>`);
                                     break;
                                 case 'channel':
-                                    text = text.replaceAll(match[0], `<span class="d-mention d-channel">#${value['name']}</span>`);
+                                    text = text.replaceAll(match[0], `<span class="discord-tag channel-tag">#${value['name']}</span>`);
                                     break;
                             }
                         }

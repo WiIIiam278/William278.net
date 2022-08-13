@@ -7,10 +7,10 @@ append styles
 
 block sidebar-content
     div(id='sidebar-content')
-        .transcript-metadata
-            .meta-item
+        .transcript-details
+            .detail-block
                 h2 Ticket Transcript
-                .transcript-tags
+                .transcript-pills
                     .pill-item
                         i(class='fa-solid fa-tag')
                         | #{transcript.ticket.project}
@@ -24,24 +24,28 @@ block sidebar-content
                         i(class='fa-solid fa-lock')
                         | #{new Date(parseInt(transcript.ticket.close_timestamp)).toLocaleDateString()}
 
-            .meta-item
+            .detail-block
                 h3 Topic
                 | #{transcript.ticket.topic}
 
-            .meta-item
+            .detail-block
                 h3 Participants
-                each participant in transcript.ticket.participants
-                    - let user = transcript.users.find(user => user.id === participant)
-                    - if (user)
-                        div(class='message-sender' style='min-height: 2.5em;')
-                            img(class='message-sender-id' style='margin-top: 0.2em' src=user.pfp)
-                            .message-sender-name
-                                | #{user.name}
-                                span(class='message-sender-numbers') ##{user.disambiguator}
-                            - if (transcript.ticket.creator === participant)
-                                .pill-item
-                                    i(class='fa-solid fa-user')
-                                    | Creator
+                .transcript-participants
+                    each participant in transcript.ticket.participants
+                        - let user = transcript.users.find(user => user.id === participant)
+                        - if (user)
+                                .transcript-participant
+                                    .participant-avatar
+                                        img(class='user-avatar' src=user.pfp)
+                                    .participant-text
+                                        .participant-name
+                                            | #{user.name}
+                                            span(class='user-discriminator') ##{user.disambiguator}
+                                        - if (transcript.ticket.creator === participant)
+                                            .participant-pills
+                                                .pill-item
+                                                    i(class='fa-solid fa-user')
+                                                    | Creator
 
 
 block main-content
@@ -49,7 +53,7 @@ block main-content
         a(href='/') Transcript
         span(class='item-divider') /
     h1(id='page-title') Ticket ##{transcript.ticket.id}
-    div(id='transcript-messages')
+    .transcript-messages
         - let openTime = new Date(parseInt(transcript.ticket.open_timestamp));
         - let closeTime = new Date(parseInt(transcript.ticket.close_timestamp));
         .system-message
@@ -57,71 +61,77 @@ block main-content
             span Ticket opened on #{openTime.toLocaleDateString()} at #{openTime.toLocaleTimeString()}
 
         mixin messageBlock(senderName='Unknown', senderNumbers='', senderImage='https://cdn.discordapp.com/embed/avatars/0.png', timestamp, messages)
-            .discord-message
-                .message-sender
-                    img(class='message-sender-id' src=senderImage)
-                    span(class='message-sender-name')
-                        | #{senderName}
-                        if (senderNumbers)
-                            span(class='message-sender-numbers') ##{senderNumbers}
-                    .message-timestamp
-                        | #{timestamp.toLocaleString()}
-                .message-content
-                    each message in messages
-                        if (message.message)
-                            .message
-                                for line in message.message.split('\n')
-                                    | !{markdown.render(processor(line))}
+            .message-block
+                img(class='user-avatar' src=senderImage)
+                .message-body
+                    .message-details
+                        span(class='user-name')
+                            | #{senderName}
+                            if (senderNumbers)
+                                span(class='user-discriminator') ##{senderNumbers}
+                        .message-timestamp
+                            | #{timestamp.toLocaleString()}
+                    .message-content
+                        each message in messages
+                            if (message.message)
+                                .message
+                                    for line in message.message.split('\n')
+                                        | !{markdown.render(processor(line))}
 
-                        if (message.embeds)
-                            each embed in message.embeds
-                                .discord-embed
-                                    .embed-content
-                                        if (embed.thumbnail)
-                                            .embed-thumbnail
-                                                img(src=embed.thumbnail.url)
-                                        if (embed.title)
-                                            .embed-title
-                                                if (embed.url)
-                                                    a(href=embed.url)
-                                                        | #{markdown.renderInline(processor(embed.title))}
+                            if (message.embeds)
+                                each embed in message.embeds
+                                    .embed
+                                        .embed-content
+                                            if (embed.thumbnail)
+                                                if (embed.title || embed.description || (embed.fields && embed.fields.length > 0) || embed.image)
+                                                    .embed-thumbnail
+                                                        img(src=embed.thumbnail.url)
                                                 else
-                                                    | #{markdown.renderInline(processor(embed.title))}
-                                        if (embed.description)
-                                            .embed-description
-                                                for line in embed.description.split('\n')
-                                                    | !{markdown.renderInline(processor(line))}
-                                        if (embed.fields)
-                                            each field in embed.fields
-                                                div(class='embed-field ' + (field.inline ? 'inline-true' : 'inline-false'))
-                                                    if (field.name)
-                                                        .field-name
-                                                            | #{markdown.renderInline(processor(field.name))}
-                                                    if (field.value)
-                                                        .field-value
-                                                            for line in field.value.split('\n')
-                                                                | !{markdown.render(processor(line))}
-                                        - if (embed.image)
-                                            .embed-image
-                                                img(src=embed.image.url)
-                                        - if (embed.footer)
-                                            .embed-footer
-                                                if (embed.footer.text)
-                                                    | #{embed.footer.text}
+                                                    .embed-image
+                                                        img(src=embed.thumbnail.url)
+                                            if (embed.title)
+                                                .embed-title
+                                                    if (embed.url)
+                                                        a(href=embed.url)
+                                                            | #{markdown.renderInline(processor(embed.title))}
+                                                    else
+                                                        | #{markdown.renderInline(processor(embed.title))}
+                                            if (embed.description)
+                                                .embed-description
+                                                    for line in embed.description.split('\n')
+                                                        | !{markdown.renderInline(processor(line))}
+                                            if (embed.fields)
+                                                .embed-fields
+                                                    each field in embed.fields
+                                                        div(class='embed-field ' + (field.inline ? 'inline-true' : 'inline-false'))
+                                                            if (field.name)
+                                                                .field-name
+                                                                    | #{markdown.renderInline(processor(field.name))}
+                                                            if (field.value)
+                                                                .field-value
+                                                                    for line in field.value.split('\n')
+                                                                        | !{markdown.render(processor(line))}
+                                            - if (embed.image)
+                                                .embed-image
+                                                    img(src=embed.image.url)
+                                            - if (embed.footer)
+                                                .embed-footer
+                                                    if (embed.footer.text)
+                                                        | #{embed.footer.text}
 
-                        if (message.attachments)
-                            each attachmentId in message.attachments
-                                - let attachment = transcript.attachments.find(attachment => attachment.id === attachmentId)
-                                if (attachment)
-                                    if (attachment.type.split('\/')[0] === 'image')
-                                        img(class='message-attachment' src=attachment.url alt=attachment.name onerror='this.src = "/assets/missing-image.png"')
-                                    else if (attachment.type.split('\/')[0] === 'video')
-                                        video(class='message-attachment' controls)
-                                            source(src=attachment.url type=attachment.type)
-                                    else
-                                        a(class='message-link' href=attachment.url download=attachment.name)
-                                            i(class='fa-solid fa-file-arrow-down')
-                                            | #{attachment.name}
+                            if (message.attachments)
+                                each attachmentId in message.attachments
+                                    - let attachment = transcript.attachments.find(attachment => attachment.id === attachmentId)
+                                    if (attachment)
+                                        if (attachment.type.split('\/')[0] === 'image')
+                                            img(class='message-image' src=attachment.url alt=attachment.name onerror='this.src = "/assets/missing-image.png"')
+                                        else if (attachment.type.split('\/')[0] === 'video')
+                                            video(class='message-video' controls)
+                                                source(src=attachment.url type=attachment.type)
+                                        else
+                                            a(class='message-attachment' href=attachment.url download=attachment.name)
+                                                i(class='fa-solid fa-file-arrow-down')
+                                                | #{attachment.name}
 
         - let messages = [];
         - let currentUser = null;
@@ -151,9 +161,11 @@ block main-content
         //- Add remaining messages
         if (messages.length > 0 && currentUser && currentTimestamp)
             - let sender = transcript.users.find(user => user.id === currentUser)
-            +messageBlock(sender.name, sender.disambiguator, sender.pfp, new Date(parseInt(currentTimestamp)), messages)
+            if (sender)
+                +messageBlock(sender.name, sender.disambiguator, sender.pfp, new Date(parseInt(currentTimestamp)), messages)
 
         .system-message
             i(class='fa-solid fa-lock')
             span Ticket closed on #{closeTime.toLocaleDateString()} at #{closeTime.toLocaleTimeString()}
-        hr
+
+        br

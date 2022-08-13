@@ -1,235 +1,175 @@
-/*
- * Discord transcript page formatting
- */
-.system-message {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    align-items: center;
-    color: var(--main-light-gray);
-    text-align: center;
+/* Generic transcript styling */
+#page-title {
+    margin-bottom: 0 !important;
 }
 
-.system-message i {
-    font-size: 2em;
-    margin-bottom: 0.5rem;
+#page-content {
+    min-width: 64vw !important;
 }
 
-.discord-message {
-    background-color: var(--main-gray);
-    padding: 0.8em 0.8em 1em;
-    border-radius: 0.5em;
-    margin: 1em 0;
+.user-avatar {
+    width: 2.7em;
+    height: 2.7em;
+    border-radius: 50%;
 }
 
-.message-timestamp {
-    font-size: small;
-    color: var(--main-light-gray);
-    vertical-align: bottom;
-    margin-left: 3.7em;
-    display: block;
-    margin-bottom: 1em;
-}
-
-.message-edited-indicator {
-    color: var(--main-light-gray);
-    font-size: small;
-    display: inline;
-}
-
-.message-sender-name {
-    vertical-align: top;
-    margin-top: 0.1em;
-    margin-left: 0.5em;
-    font-weight: bold;
-    display: inline-block;
-}
-
-.transcript-metadata {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.transcript-metadata .meta-item {
-    margin-bottom: 0.75em;
-}
-
-.transcript-metadata h1,h2,h3,h4 {
-    margin: 0.3em 0;
-    padding: 0;
-}
-
-.pill-item {
-    display: inline-block;
-    background-color: var(--main-background);
-    width: fit-content;
-    margin: 0 0.35em 0.35em 0;
-}
-
-.pill-item i {
-    margin-right: 0.3em;
-}
-
-.message-sender .pill-item {
-    display: block !important;
-    margin-left: 3.25em;
-    padding: 0;
-    background-color: transparent;
-    color: var(--main-light-gray);
-}
-
-.message-sender-numbers {
+.user-discriminator {
     color: var(--main-light-gray);
     font-weight: normal;
-    display: inline;
 }
 
-.message-sender img {
-    max-width: 40px;
-    border-radius: 100%;
-    display: inline-block;
-    float: left;
+blockquote {
+    border-left: var(--main-light-gray) 0.3em solid;
+    border-radius: 0;
+    margin: 0.3em 0;
 }
 
-.message p {
-    margin: 0 0;
-    padding: 0 0;
-}
-
-.field-name {
-    font-weight: bold;
-}
-
-.field-value p {
-    margin: 0 0;
-    padding: 0 0;
-}
-
-.message code {
-    background-color: var(--main-background);
-    border-radius: 0.5em;
-    padding: 0.1em 0.3em;
-}
-
-.message-link {
-    padding: 0.75em;
-    border-radius: 0.25em;
-    border-left: var(--accent-color) 0.3em solid;
-    background-color: var(--main-background);
-    margin-left: 3.1em;
-    line-height: 3em;
-}
-
-.message-link::before {
-    content: '≡';
-    padding: 0 0.15em;
-    background-color: var(--accent-color);
-    border-radius: 0.15em 0.4em 0.15em 0.15em;
-    margin-right: 0.5em;
-    font-size: larger;
-    color: var(--main-background);
-}
-
-.discord-embed {
-    vertical-align: top;
-    margin-left: 3.1em;
-    flex-direction: column;
-    width: fit-content;
-}
-
-.embed-thumbnail {
-    float: right;
-    max-width: 70px;
-    min-height: fit-content;
-}
-
-.embed-image {
-    max-width: 250px;
-    display: block;
+pre {
+    padding: 0;
     margin: 0.5em 0;
 }
 
-.embed-content {
-    display: inline;
-}
-
-.embed-description {
-    margin-bottom: 1em;
-}
-
-.embed-field {
-    margin: 0.2em 0.2em 0.2em 0;
-}
-
-.inline-true {
-    display: inline-block;
-    width: fit-content;
-    margin-right: 0.4em;
-}
-
-.inline-true .field-value {
-    width: 60%;
-}
-
-.inline-true .field-name {
-    width: 60%;
-}
-
-.inline-false {
+/* Transcript sidebar */
+.transcript-details {
+    display: flex;
+    flex-direction: column;
     width: 100%;
 }
 
-.message {
-    margin-left: 3.1em;
-    margin-bottom: 0.3em;
+.transcript-details h1, h2, h3, h4 {
+    margin: 0.2em 0;
+    padding: 0;
 }
 
-.message blockquote {
-    background-color: var(--main-gray) !important;
-    padding: 0 0 0 0.7em !important;
-    border-radius: 0 !important;
-    border-left: 0.25em solid var(--main-light-gray) !important;
-    margin: 0.3em 0 0.3em;
+.detail-block {
+    margin: 0.5em 0;
 }
 
-.d-mention {
+/* Transcript detail pills */
+.transcript-pills {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.transcript-pills .pill-item {
     background-color: var(--main-background);
-    padding: 0.1em 0.3em;
-    border-radius: 0.25em;
+    margin: 0.15em;
 }
 
-.d-user {
-    color: var(--accent-color);
+/* Transcript participant lists */
+.transcript-participants {
+    display: flex;
+    flex-direction: column;
 }
 
-.d-unknown {
+.transcript-participant {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0.1em 0;
+    align-content: center;
+}
+
+.participant-avatar {
+    margin-right: 0.5em;
+}
+
+.participant-text {
+    height: 100%;
+    margin-top: -0.35em;
+}
+
+.participant-pills .pill-item {
+    background-color: transparent;
+    font-size: smaller;
     color: var(--main-light-gray);
+    margin: 0;
+    padding: 0;
 }
 
-.d-channel {
-    color: var(--accent-color);
+.pill-item i {
+    margin-right: 0.35em;
 }
 
-.d-role {
-    /*color: var(--accent-color);*/
+.participant-name {
+    height: 50%;
+    flex-grow: 1;
 }
 
-.d-emoji {
-    max-width: 1.4em;
-    display: inline;
-    vertical-align: top;
+/* Transcript messages */
+.transcript-messages {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
-.message-attachment {
-    max-width: 400px;
-    max-height: 225px;
-    background-color: var(--main-background);
-    margin-left: 3.1em;
+.system-message {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--main-light-gray);
+    text-align: center;
+    margin: 0.4em 0;
+}
+
+.system-message i {
+    font-size: 2.5em;
+    margin-bottom: 0.5rem;
+}
+
+.message-block {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin: 0.4em 0;
+    padding: 0.7em;
+    background-color: var(--main-gray);
     border-radius: 0.5em;
 }
 
-.attachment-video {
+.message-details {
+    margin-bottom: 0.3em;
+}
+
+.message-timestamp {
+    font-size: 0.8em;
+    color: var(--main-light-gray);
+    align-self: center;
+    font-weight: normal;
+}
+
+.message-block .user-avatar {
+    margin-right: 0.5em;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.message p {
+    margin: 0.1em;
+}
+
+.message-attachment {
+    background-color: var(--main-background);
+    padding: 0.8em;
+    width: fit-content;
+    border-radius: 0.5em;
+    border-left: 0.3em solid var(--accent-color);
+}
+
+.message-image {
+    max-width: 400px;
+    height: auto;
+    background-color: var(--main-background);
+    margin: 0.5em 0;
+    border-radius: 0.5em;
+}
+
+.message-video {
     max-width: 400px;
     height: auto;
     background-color: var(--main-background);
@@ -238,25 +178,85 @@
     border-radius: 0.25em;
 }
 
-.discord-embed {
-    background-color: var(--main-background);
-    padding: 0.75em;
-    border-radius: 0.5em;
-    border-left: var(--accent-color) 0.3em solid;
-    display: inline-block;
-    min-height: fit-content !important;
-    margin-bottom: 0.3em;
+.message-attachment i {
+    margin-right: 0.5em;
 }
 
-.embed-content {
-    display: inline-block;
+/* Emoji and inline stuff */
+.discord-emoji {
+    max-width: 1.4em;
+    display: inline;
+    vertical-align: top;
+}
+
+/* Message embeds */
+.embed {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    max-width: 36em;
+    width: fit-content;
+    margin: 0.1em 0;
+    background-color: var(--main-background);
+    border-radius: 0.5em;
+    padding: 0.7em;
+    border-left: 0.3em solid var(--accent-color);
+}
+
+.embed-thumbnail {
+    width: 100%;
+    height: 0;
+    text-align: right;
+}
+
+.embed-thumbnail img {
+    max-width: 5em;
+    height: auto;
 }
 
 .embed-title {
+    font-size: 1.1em;
     font-weight: bold;
-    font-size: larger;
+}
+
+.embed p {
+    margin: 0.2em 0;
+}
+
+.embed-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 1;
+    margin: 0.1em 0.5em;
+}
+
+.embed-fields {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    margin: 0.5em 0.5em 0.5em 0;
 }
 
 .embed-footer {
-    font-size: smaller;
+    font-size: small;
+}
+
+.embed-fields .inline-false {
+    width: 100%;
+}
+
+
+.embed-image img {
+    max-width: 350px;
+    height: auto;
+}
+
+.field-name {
+    font-weight: bold;
+    margin-bottom: 0.2em;
 }

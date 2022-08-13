@@ -33,6 +33,17 @@ main {
     max-width: 1400px;
 }
 
+code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.825em;
+    background-color: var(--main-background);
+    border-radius: 0.35em;
+    padding: 0.2em;
+    overflow: scroll;
+    max-width: inherit;
+    word-wrap: anywhere;
+}
+
 /* Scroll bar */
 /* Firefox */
 * {
@@ -141,11 +152,6 @@ a:hover {
 img {
     max-width: 100%;
     height: auto;
-}
-
-code {
-    overflow: scroll;
-    max-width: inherit;
 }
 
 /* Navigation bar */
