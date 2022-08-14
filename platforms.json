@@ -26,7 +26,7 @@
   },
   "modrinth": {
     "name": "Modrinth",
-    "url": "https://modrinth.com/mods/{id}",
+    "url": "https://modrinth.com/mod/{id}",
     "icon": "fa-solid fa-wrench"
   }
 }

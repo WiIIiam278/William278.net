@@ -5,7 +5,8 @@
     "repository": "https://github.com/WiIIiam278/HuskHomes2",
     "ids": {
       "spigot": "83767",
-      "polymart": "284"
+      "polymart": "284",
+      "modrinth": "J6U9o3JG"
     },
     "tags": [
       "plugin",
@@ -95,7 +96,8 @@
     "repository": "https://github.com/WiIIiam278/SchematicUpload",
     "ids": {
       "spigot": "100657",
-      "polymart": "2125"
+      "polymart": "2125",
+      "modrinth": "IHhrl01E"
     },
     "tags": [
       "plugin",
@@ -126,7 +128,8 @@
     "repository": "https://github.com/WiIIiam278/HomeGUI",
     "ids": {
       "spigot": "91059",
-      "polymart": "928"
+      "polymart": "928",
+      "modrinth": "BME80dEI"
     },
     "tags": [
       "plugin",
@@ -163,7 +166,8 @@
     "repository": "https://github.com/WiIIiam278/SignSearch",
     "ids": {
       "spigot": "92369",
-      "polymart": "1060"
+      "polymart": "1060",
+      "modrinth": "PUtbeCdA"
     },
     "tags": [
       "plugin",
