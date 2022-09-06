@@ -13,19 +13,26 @@ const {createGzip} = require('zlib')
 
 // GitHub flavoured Markdown parsing
 const MarkdownIt = require('markdown-it');
+const hljs = require('highlight.js');
 const markdown = new MarkdownIt({
-    html: true, xhtmlOut: true
+    html: true, xhtmlOut: true,
+    highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(str, { language: lang }).value;
+          } catch (__) {}
+        }
+    
+        return ''; // use external default escaping
+      }
 }).use(require('markdown-it-wikilinks')({
     postProcessPageName: (pageName) => {
         pageName = pageName.trim()
         pageName = pageName.split('/').map(require('sanitize-filename')).join('/')
-        pageName = pageName.replace(/\s+/, '-')
+        pageName = pageName.replace(/ /g, '-');
         return pageName
     }, uriSuffix: ''
-})).use(require('markdown-it-anchor'))
-    .use(require('markdown-it-prism'), {
-        defaultLanguage: 'yml'
-    });
+})).use(require('markdown-it-anchor'));
 
 // App setup
 const app = express();
@@ -61,8 +68,10 @@ app.use((req, res, next) => {
 const content = path.join(__dirname, 'content');
 const readmes = path.join(__dirname, 'readmes');
 const fontawesome = path.join(__dirname, 'node_modules', '@fortawesome');
+const highlighter = path.join(__dirname, 'node_modules', 'highlight.js', 'styles');
 app.use(express.static(content));
 app.use(express.static(fontawesome));
+app.use(express.static(highlighter));
 
 app.set('view engine', 'pug');
 app.set('views', 'pages')

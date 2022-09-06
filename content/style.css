@@ -6,6 +6,7 @@
     --main-gray: #373737;
     --main-light-gray: #969696;
     --main-background: #282828;
+    --main-code-blocks: #242424;
 }
 
 /* Main font and rules */
@@ -33,15 +34,27 @@ main {
     max-width: 1400px;
 }
 
+
 code {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.825em;
-    background-color: var(--main-background);
-    border-radius: 0.35em;
-    padding: 0.2em;
-    overflow: scroll;
-    max-width: inherit;
-    word-wrap: anywhere;
+    font-size: 0.9em;
+    background: var(--main-code-blocks);
+    padding: 0.1em 0.3em;
+    border-radius: 0.5em;
+    word-wrap: everywhere;
+}
+
+pre {
+    background:var(--main-code-blocks);
+    color: var(--main-white);
+    font-family: 'Nunito', sans-serif;
+    padding: 1rem;
+    border-radius: 0.5em;
+    overflow-x: auto;
+}
+
+pre code {
+    background-color: transparent !important;
 }
 
 /* Scroll bar */
@@ -73,11 +86,6 @@ hr {
 }
 
 /* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
 table td, table th {
     border: 0.05em solid var(--main-light-gray);
     padding: 0.5em 0.8em;
@@ -402,7 +410,6 @@ img {
 
 /* Head icon */
 #main-page-head-icon {
-    display: inline-block;
     float: right;
     margin: 1.5em 0.5em;
     border-radius: 0.5em;
