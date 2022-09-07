@@ -39,6 +39,7 @@ const app = express();
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8000;
 const domain = process.env.DOMAIN || 'https://william278.net';
+const gtag = process.env.ANALYTICS || '';
 const projects = JSON.parse(fs.readFileSync(path.join(__dirname, 'projects.json'), 'utf8'));
 const platforms = JSON.parse(fs.readFileSync(path.join(__dirname, 'platforms.json'), 'utf8'));
 const limiter = rate({
@@ -278,6 +279,7 @@ const servePage = (req, res, page, options) => {
         'title': 'Open source Minecraft server software & game projects - William278.net',
         'tagline': 'Open source Minecraft server software & game projects',
         'description': 'Easily-accessible documentation and information site for all of William278\'s Minecraft plugins, projects & games',
+        'gtag': gtag
     };
     if (options) {
         Object.assign(data, options);

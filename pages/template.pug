@@ -45,6 +45,15 @@ html(lang='en')
             meta(name='og:type', content='product')
             meta(name='og:site_name', content=`William278.net - ${tagline}`)
             meta(name='og:url', content=`${domain}/${path}`)
+        
+        block analytics
+            //- Google Analytics
+            script(async src=`https://www.googletagmanager.com/gtag/js?id=${gtag}`)
+            script.
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', `${gtag}`);
 
         block scripts
             script(src='//code.jquery.com/jquery-1.10.2.js')
