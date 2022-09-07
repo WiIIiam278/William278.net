@@ -50,7 +50,9 @@ pre {
     font-family: 'Nunito', sans-serif;
     padding: 1rem;
     border-radius: 0.5em;
-    overflow-x: auto;
+    width: fit-content;
+    max-width: 93vw;
+    overflow-x: scroll;
 }
 
 pre code {
@@ -86,6 +88,12 @@ hr {
 }
 
 /* Tables */
+.scroll-table {
+    width: 100%;
+    max-width: 93vw;
+    height: auto;
+}
+
 table td, table th {
     border: 0.05em solid var(--main-light-gray);
     padding: 0.5em 0.8em;
@@ -232,19 +240,19 @@ img {
 
 #main-page-left-column {
     flex: 1;
-    max-width: 45%;
+    max-width: 45vw;
     margin: 0 1em;
 }
 
 #main-page-right-column {
     flex: 1;
-    max-width: 45%;
+    max-width: 50vw;
     margin: 0 1em;
 }
 
 #project-page-left-column {
     flex: 1;
-    max-width: 65%;
+    max-width: 65vw;
     margin: 0 1em;
 }
 
@@ -256,7 +264,7 @@ img {
 
 #project-page-right-column {
     flex: 1;
-    max-width: 25%;
+    max-width: 25vw;
     margin: 0 1em;
 }
 

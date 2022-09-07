@@ -18,6 +18,7 @@
     "highlight.js": "^11.6.0",
     "markdown-it": "^12.3.2",
     "markdown-it-anchor": "^8.6.4",
+    "markdown-it-scrolltable": "^0.1.6",
     "markdown-it-wikilinks": "^1.2.0",
     "mineget": "^1.0.5",
     "node-fetch": "^3.2.4",

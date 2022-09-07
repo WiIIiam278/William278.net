@@ -16,6 +16,7 @@ const MarkdownIt = require('markdown-it');
 const hljs = require('highlight.js');
 const markdown = new MarkdownIt({
     html: true, xhtmlOut: true,
+    linkify: true, typographer: true,
     highlight: function (str, lang) {
         if (lang && hljs.getLanguage(lang)) {
           try {
@@ -32,7 +33,7 @@ const markdown = new MarkdownIt({
         pageName = pageName.replace(/ /g, '-');
         return pageName
     }, uriSuffix: ''
-})).use(require('markdown-it-anchor'));
+})).use(require('markdown-it-scrolltable')).use(require('markdown-it-anchor'));
 
 // App setup
 const app = express();
