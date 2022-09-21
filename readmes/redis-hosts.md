@@ -13,7 +13,7 @@ If your host doesn't offer it, you can always buy a Redis server separately (e.g
 | Host           | Site                              | Redis | Notes                                                                               |
 |----------------|-----------------------------------|-------|-------------------------------------------------------------------------------------|
 | Bloom Host     | https://bloom.host                | ✅     | Available through their "Split servers" feature at the cost of some of your RAM     |
-| Falix Nodes    | https://falixnodes.net/           | ✅     | Redis is a separate paid service.                                                   |
+| Falix Nodes    | https://falixnodes.net/           | ✅     | Available separately as a paid service.                                             |
 | GGServers      | https://ggservers.com             | 🚫    | Asked me if I meant the "Rediscovered mod" when I enquired their support chat (lol) |
 | MCProHosting   | https://mcprohosting.com          | 🚫    | Not currently, but they're "looking into adding" \[Redis\] "in the future"          |
 | Shockbyte      | https://shockbyte.com             | 🚫    | To quote their support assistant; "Unfortunately, we only MySQL \[sic\]."           |
@@ -26,4 +26,4 @@ If your host doesn't offer it, you can always buy a Redis server separately (e.g
 
 **Note:** I do not endorse and am not affiliated with any of these services. Visit external sites at your own risk.
 
-Information accurate as of 21/06/2021. If you know of any other hosts that offer Redis, please let me know, and I'll update the list, or submit a [pull request here](https://github.com/WiIIiam278/William278.net).
+Information accurate as of 21/06/2021. I tried to gather some of the more popular hosts, though didn't bother if I had to make an account or go through a long-winded support ticket or email process. If you know of any other hosts that offer Redis, please let me know, and I'll update the list, or submit a [pull request here](https://github.com/WiIIiam278/William278.net).
