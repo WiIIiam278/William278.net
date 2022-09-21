@@ -13,25 +13,34 @@ const {createGzip} = require('zlib')
 
 // GitHub flavoured Markdown parsing
 const MarkdownIt = require('markdown-it');
+const hljs = require('highlight.js');
 const markdown = new MarkdownIt({
-    html: true, xhtmlOut: true
+    html: true, xhtmlOut: true,
+    linkify: true, typographer: true,
+    highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(str, { language: lang }).value;
+          } catch (__) {}
+        }
+    
+        return ''; // use external default escaping
+      }
 }).use(require('markdown-it-wikilinks')({
     postProcessPageName: (pageName) => {
         pageName = pageName.trim()
         pageName = pageName.split('/').map(require('sanitize-filename')).join('/')
-        pageName = pageName.replace(/\s+/, '-')
+        pageName = pageName.replace(/ /g, '-');
         return pageName
     }, uriSuffix: ''
-})).use(require('markdown-it-anchor'))
-    .use(require('markdown-it-prism'), {
-        defaultLanguage: 'yml'
-    });
+})).use(require('markdown-it-scrolltable')).use(require('markdown-it-anchor'));
 
 // App setup
 const app = express();
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 8000;
 const domain = process.env.DOMAIN || 'https://william278.net';
+const gtag = process.env.ANALYTICS || '';
 const projects = JSON.parse(fs.readFileSync(path.join(__dirname, 'projects.json'), 'utf8'));
 const platforms = JSON.parse(fs.readFileSync(path.join(__dirname, 'platforms.json'), 'utf8'));
 const limiter = rate({
@@ -61,8 +70,10 @@ app.use((req, res, next) => {
 const content = path.join(__dirname, 'content');
 const readmes = path.join(__dirname, 'readmes');
 const fontawesome = path.join(__dirname, 'node_modules', '@fortawesome');
+const highlighter = path.join(__dirname, 'node_modules', 'highlight.js', 'styles');
 app.use(express.static(content));
 app.use(express.static(fontawesome));
+app.use(express.static(highlighter));
 
 app.set('view engine', 'pug');
 app.set('views', 'pages')
@@ -269,6 +280,7 @@ const servePage = (req, res, page, options) => {
         'title': 'Open source Minecraft server software & game projects - William278.net',
         'tagline': 'Open source Minecraft server software & game projects',
         'description': 'Easily-accessible documentation and information site for all of William278\'s Minecraft plugins, projects & games',
+        'gtag': gtag
     };
     if (options) {
         Object.assign(data, options);

@@ -3,7 +3,7 @@ extends sidebar-page
 
 append styles
     link(rel='stylesheet' href='/transcript.css')
-    link(rel='stylesheet' href='/prism.css')
+    link(rel='stylesheet' href='/atom-one-dark.css')
 
 block sidebar-content
     div(id='sidebar-content')
@@ -123,9 +123,10 @@ block main-content
                                 each attachmentId in message.attachments
                                     - let attachment = transcript.attachments.find(attachment => attachment.id === attachmentId)
                                     if (attachment)
-                                        if (attachment.type.split('\/')[0] === 'image')
+                                        - let type = attachment.type ? attachment.type.split('\/')[0] : 'unknown'
+                                        if (type === 'image')
                                             img(class='message-image' src=attachment.url alt=attachment.name onerror='this.src = "/assets/missing-image.png"')
-                                        else if (attachment.type.split('\/')[0] === 'video')
+                                        else if (type === 'video')
                                             video(class='message-video' controls)
                                                 source(src=attachment.url type=attachment.type)
                                         else

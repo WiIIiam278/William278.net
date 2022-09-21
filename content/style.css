@@ -6,6 +6,7 @@
     --main-gray: #373737;
     --main-light-gray: #969696;
     --main-background: #282828;
+    --main-code-blocks: #242424;
 }
 
 /* Main font and rules */
@@ -33,15 +34,29 @@ main {
     max-width: 1400px;
 }
 
+
 code {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.825em;
-    background-color: var(--main-background);
-    border-radius: 0.35em;
-    padding: 0.2em;
-    overflow: scroll;
-    max-width: inherit;
-    word-wrap: anywhere;
+    font-size: 0.9em;
+    background: var(--main-code-blocks);
+    padding: 0.1em 0.3em;
+    border-radius: 0.5em;
+    word-wrap: everywhere;
+}
+
+pre {
+    background:var(--main-code-blocks);
+    color: var(--main-white);
+    font-family: 'Nunito', sans-serif;
+    padding: 1rem;
+    border-radius: 0.5em;
+    width: fit-content;
+    max-width: 93vw;
+    overflow-x: scroll;
+}
+
+pre code {
+    background-color: transparent !important;
 }
 
 /* Scroll bar */
@@ -73,9 +88,10 @@ hr {
 }
 
 /* Tables */
-table {
+.scroll-table {
     width: 100%;
-    border-collapse: collapse;
+    max-width: 93vw;
+    height: auto;
 }
 
 table td, table th {
@@ -224,19 +240,19 @@ img {
 
 #main-page-left-column {
     flex: 1;
-    max-width: 45%;
+    max-width: 45vw;
     margin: 0 1em;
 }
 
 #main-page-right-column {
     flex: 1;
-    max-width: 45%;
+    max-width: 50vw;
     margin: 0 1em;
 }
 
 #project-page-left-column {
     flex: 1;
-    max-width: 65%;
+    max-width: 65vw;
     margin: 0 1em;
 }
 
@@ -248,7 +264,7 @@ img {
 
 #project-page-right-column {
     flex: 1;
-    max-width: 25%;
+    max-width: 25vw;
     margin: 0 1em;
 }
 
@@ -402,7 +418,6 @@ img {
 
 /* Head icon */
 #main-page-head-icon {
-    display: inline-block;
     float: right;
     margin: 1.5em 0.5em;
     border-radius: 0.5em;

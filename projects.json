@@ -76,7 +76,8 @@
     "repository": "https://github.com/WiIIiam278/HuskChat",
     "ids": {
       "spigot": "94496",
-      "polymart": "1217"
+      "polymart": "1217",
+      "modrinth": "SSXTD3me"
     },
     "tags": [
       "plugin",
@@ -125,17 +126,17 @@
   {
     "id": "huskhomesgui",
     "name": "HuskHomesGUI",
-    "repository": "https://github.com/WiIIiam278/HomeGUI",
+    "repository": "https://github.com/WiIIiam278/HuskHomesGUI",
     "ids": {
       "spigot": "91059",
       "polymart": "928",
-      "modrinth": "BME80dEI"
+      "modrinth": "bME80dEI"
     },
     "tags": [
       "plugin",
       "spigot"
     ],
-    "tagline": "Show your HuskHomes homes in an easy-to-use GUI menu",
+    "tagline": "Show your HuskHomes homes and warps in an easy-to-use GUI menu",
     "icon": {
       "svg": "huskhomesgui.svg",
       "png": "huskhomesgui.png"
