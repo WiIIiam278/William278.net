@@ -295,6 +295,13 @@ app.get('/terms', (req, res) => {
     });
 });
 
+// Redis hosts page
+app.get('/redis-hosts', (req, res) => {
+    servePage(req, res, 'readme', {
+        'markdown': markdown.render(fs.readFileSync(path.join(readmes, 'redis-hosts.md'), 'utf8'))
+    });
+});
+
 // Project pages
 app.get('/project/:name', (req, res) => {
     const project = projects.find(project => project['id'] === req.params.name);
