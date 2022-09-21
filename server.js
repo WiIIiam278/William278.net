@@ -237,6 +237,15 @@ const getProjectBox = (project) => {
             'link': '/project/' + project['id']
         })
     }
+    if (project['links']) {
+        for (let link of project['links']) {
+            projectData['links'].push({
+                'id': link['text'].toLowerCase(),
+                'text': link['text'],
+                'link': link['link']
+            })
+        }
+    }
 
     // Prepare project stats if this is a plugin
     if (project['tags'] && projectStats[project['id']]) {
