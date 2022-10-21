@@ -1,6 +1,6 @@
 # Time to Battle archive
 
-TimeToBattle.net was my public-access Minecraft server I ran for just under two years, between August 2020 and June 2022. The server launched to the public after a period of closed testing on August 9, 2020, and was live-streamed through my [Twitch channel](https://twitch.tv/william278). The server ended operations on June 1, 2022. You can still join TimeToBattle's [archived discord server here](https://discord.gg/xceEsXC).
+TimeToBattle was my public-access Minecraft server I ran for just under two years, between August 2020 and June 2022. The server launched to the public after a period of closed testing on August 9, 2020, and was live-streamed through my [Twitch channel](https://twitch.tv/william278). The server ended operations on June 1, 2022. You can still join TimeToBattle's [archived discord server here](https://discord.gg/xceEsXC).
 
 ## Features
 The server contained a number of features and game modes through its run.
